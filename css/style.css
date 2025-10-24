@@ -335,8 +335,8 @@ table tbody tr:last-child td {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 450px;
-    max-height: 50vh;
+    width: 600px;
+    max-height: 70vh;
     background: white;
     border-radius: 10px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
