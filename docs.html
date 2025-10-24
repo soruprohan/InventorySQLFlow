@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Documentation - Inventory Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #2563eb;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        .card p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .btn:hover {
+            background: #1e40af;
+            transform: scale(1.05);
+        }
+        .btn-secondary {
+            background: #64748b;
+        }
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        .btn-success {
+            background: #10b981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .status {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        .status-ready {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-setup {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        .feature-list li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .footer {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .content {
+                padding: 20px;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Inventory Management System</h1>
+            <p>With Real-time SQL Query Visualization</p>
+            <span class="status status-ready">✓ Project Complete</span>
+        </div>
+        
+        <div class="content">
+            <!-- Quick Start Card -->
+            <div class="card">
+                <h2>🚀 Quick Start</h2>
+                <p>Get started in 3 simple steps:</p>
+                <ol style="margin-left: 20px; color: #64748b;">
+                    <li style="margin: 10px 0;">Start XAMPP (Apache + MySQL)</li>
+                    <li style="margin: 10px 0;">Import <code>install_database.sql</code> in phpMyAdmin</li>
+                    <li style="margin: 10px 0;">Open the application</li>
+                </ol>
+                <div class="btn-group">
+                    <a href="SETUP_GUIDE.html" class="btn btn-success">📋 Setup Guide</a>
+                    <a href="index.html" class="btn">🎯 Launch Application</a>
+                    <a href="QUICK_START.txt" class="btn btn-secondary">⚡ Quick Reference</a>
+                </div>
+            </div>
+
+            <!-- Documentation Card -->
+            <div class="card">
+                <h2>📚 Documentation</h2>
+                <p>Comprehensive guides and references to help you learn:</p>
+                <div class="btn-group">
+                    <a href="README.md" class="btn" download>📖 README.md</a>
+                    <a href="PROJECT_FILES.txt" class="btn btn-secondary" download>📁 File Structure</a>
+                </div>
+            </div>
+
+            <!-- SQL Learning Resources Card -->
+            <div class="card">
+                <h2>🎓 SQL Learning Resources</h2>
+                <p>Master SQL with these comprehensive guides:</p>
+                <div class="btn-group">
+                    <a href="SQL_REFERENCE.sql" class="btn" download>📚 SQL Reference Guide</a>
+                    <a href="TEST_QUERIES.sql" class="btn" download>🔍 50+ Test Queries</a>
+                    <a href="install_database.sql" class="btn btn-secondary" download>🗄️ Database Schema</a>
+                </div>
+            </div>
+
+            <!-- Features Card -->
+            <div class="card">
+                <h2>✨ Key Features</h2>
+                <ul class="feature-list">
+                    <li>Real-time SQL query visualization</li>
+                    <li>Complete CRUD operations for inventory management</li>
+                    <li>SQL query history with 50+ queries tracked</li>
+                    <li>Raw SQL executor for custom queries</li>
+                    <li>Comprehensive coverage of SQL operations</li>
+                    <li>Sample data pre-loaded and ready to explore</li>
+                    <li>Modern, responsive user interface</li>
+                    <li>Educational design for learning SQL</li>
+                </ul>
+            </div>
+
+            <!-- SQL Operations Card -->
+            <div class="card">
+                <h2>💻 SQL Operations Covered</h2>
+                <p>This project demonstrates all required SQL operations:</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div>
+                        <strong style="color: #1e293b;">Basic Operations</strong>
+                        <ul style="margin-left: 20px; color: #64748b; font-size: 0.9rem;">
+                            <li>CREATE, DROP, ALTER TABLE</li>
+                            <li>INSERT, SELECT, UPDATE, DELETE</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <strong style="color: #1e293b;">Constraints</strong>
+                        <ul style="margin-left: 20px; color: #64748b; font-size: 0.9rem;">
+                            <li>PRIMARY KEY, FOREIGN KEY</li>
+                            <li>UNIQUE, NOT NULL, CHECK</li>
+                            <li>ON DELETE CASCADE/SET NULL</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <strong style="color: #1e293b;">Advanced Queries</strong>
+                        <ul style="margin-left: 20px; color: #64748b; font-size: 0.9rem;">
+                            <li>INNER/LEFT/RIGHT JOIN</li>
+                            <li>Subqueries, UNION</li>
+                            <li>Views, Aggregate Functions</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <strong style="color: #1e293b;">Query Clauses</strong>
+                        <ul style="margin-left: 20px; color: #64748b; font-size: 0.9rem;">
+                            <li>WHERE, BETWEEN, IN, LIKE</li>
+                            <li>GROUP BY, HAVING</li>
+                            <li>ORDER BY, DISTINCT</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- External Resources Card -->
+            <div class="card">
+                <h2>🔗 External Resources</h2>
+                <p>Additional tools and resources:</p>
+                <div class="btn-group">
+                    <a href="http://localhost/phpmyadmin" class="btn" target="_blank">🗄️ phpMyAdmin</a>
+                    <a href="http://localhost/dashboard" class="btn btn-secondary" target="_blank">⚙️ XAMPP Dashboard</a>
+                </div>
+            </div>
+
+            <!-- System Info Card -->
+            <div class="card">
+                <h2>ℹ️ System Information</h2>
+                <p><strong>Version:</strong> 1.0</p>
+                <p><strong>Technology Stack:</strong> HTML, CSS, JavaScript, PHP, MySQL</p>
+                <p><strong>Total Files:</strong> 22 files</p>
+                <p><strong>Database Tables:</strong> 9 tables</p>
+                <p><strong>API Endpoints:</strong> 11 endpoints</p>
+                <p><strong>Sample Queries:</strong> 50+ test queries included</p>
+                <span class="status status-setup">🔧 Setup Required</span>
+            </div>
+
+            <!-- File Structure Card -->
+            <div class="card">
+                <h2>📂 Project Structure</h2>
+                <pre style="background: #1e293b; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 0.9rem;">
+inventoryflowv2/
+├── 📄 index.html              → Main Application
+├── 📄 SETUP_GUIDE.html        → Interactive Setup Guide
+├── 📄 README.md               → Documentation
+├── 📄 QUICK_START.txt         → Quick Reference
+├── 📄 install_database.sql    → Database Setup
+├── 📄 SQL_REFERENCE.sql       → SQL Guide
+├── 📄 TEST_QUERIES.sql        → Practice Queries
+├── 📁 css/
+│   └── style.css              → Styles
+├── 📁 js/
+│   └── app.js                 → Frontend Logic
+└── 📁 api/                    → Backend API
+    ├── config.php             → Database Config
+    ├── dashboard.php          → Dashboard
+    ├── products.php           → Products API
+    ├── suppliers.php          → Suppliers API
+    ├── inventory.php          → Inventory API
+    ├── categories.php         → Categories API
+    ├── warehouses.php         → Warehouses API
+    ├── purchase_orders.php    → Orders API
+    ├── transactions.php       → Transactions API
+    ├── adjustments.php        → Adjustments API
+    └── execute_sql.php        → SQL Executor
+                </pre>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Inventory Management System with SQL Query Visualization</strong></p>
+            <p style="opacity: 0.8; margin-top: 10px;">Built for educational purposes • Version 1.0 • 2025</p>
+            <p style="opacity: 0.8; margin-top: 10px;">🚀 Ready to learn SQL? Open SETUP_GUIDE.html to get started!</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Guide - Inventory Management System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #1e40af;
+            margin-top: 30px;
+        }
+        .step {
+            background: #f1f5f9;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #1e293b;
+        }
+        code {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        .success {
+            background: #d1fae5;
+            border-left-color: #10b981;
+            color: #065f46;
+        }
+        .warning {
+            background: #fef3c7;
+            border-left-color: #f59e0b;
+            color: #92400e;
+        }
+        .error {
+            background: #fee2e2;
+            border-left-color: #ef4444;
+            color: #991b1b;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 10px 10px 10px 0;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #1e40af;
+        }
+        ul {
+            margin: 10px 0;
+        }
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Inventory Management System - Setup Guide</h1>
+        
+        <div class="step success">
+            <h3>✅ Prerequisites</h3>
+            <p>Make sure you have the following installed:</p>
+            <ul>
+                <li><strong>XAMPP</strong> (includes Apache & MySQL)</li>
+                <li><strong>Modern Web Browser</strong> (Chrome, Firefox, Edge)</li>
+                <li><strong>Text Editor</strong> (optional, for customization)</li>
+            </ul>
+        </div>
+
+        <h2>📋 Installation Steps</h2>
+
+        <div class="step">
+            <h3>Step 1: Start XAMPP Services</h3>
+            <ol>
+                <li>Open XAMPP Control Panel</li>
+                <li>Click <strong>Start</strong> for <code>Apache</code></li>
+                <li>Click <strong>Start</strong> for <code>MySQL</code></li>
+                <li>Both should show green "Running" status</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Create Database</h3>
+            <p><strong>Option A: Using phpMyAdmin (Recommended)</strong></p>
+            <ol>
+                <li>Open browser and go to: <code>http://localhost/phpmyadmin</code></li>
+                <li>Click on <strong>"New"</strong> in the left sidebar</li>
+                <li>Database name: <code>inventory_system</code></li>
+                <li>Click <strong>"Create"</strong></li>
+                <li>Select the <code>inventory_system</code> database</li>
+                <li>Click on <strong>"SQL"</strong> tab</li>
+                <li>Open <code>install_database.sql</code> file from this project</li>
+                <li>Copy all content and paste it in the SQL tab</li>
+                <li>Click <strong>"Go"</strong> to execute</li>
+                <li>You should see "Database schema created successfully!"</li>
+            </ol>
+            
+            <p><strong>Option B: Using Command Line</strong></p>
+            <pre>cd C:\xampp\mysql\bin
+mysql -u root -p
+CREATE DATABASE inventory_system;
+USE inventory_system;
+SOURCE C:/xampp/htdocs/inventoryflowv2/install_database.sql;
+EXIT;</pre>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Verify Database Configuration</h3>
+            <p>Open <code>api/config.php</code> and verify the settings:</p>
+            <pre>define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');  // Leave empty if no password set
+define('DB_NAME', 'inventory_system');</pre>
+            <p>If your MySQL has a password, update <code>DB_PASS</code> accordingly.</p>
+        </div>
+
+        <div class="step">
+            <h3>Step 4: Access the Application</h3>
+            <ol>
+                <li>Open your web browser</li>
+                <li>Navigate to: <code>http://localhost/inventoryflowv2/</code></li>
+                <li>You should see the Inventory Management System dashboard</li>
+                <li>The SQL Monitor dialog should appear in the bottom-right corner</li>
+            </ol>
+        </div>
+
+        <div class="step success">
+            <h3>✅ Verification</h3>
+            <p>To verify everything is working:</p>
+            <ol>
+                <li>Dashboard should show statistics (products, inventory, suppliers, orders)</li>
+                <li>Click on different sections (Products, Suppliers, etc.)</li>
+                <li>Watch the SQL Monitor - it should display queries as you navigate</li>
+                <li>Try adding a new supplier or product</li>
+                <li>Check the SQL Query History in the monitor</li>
+            </ol>
+        </div>
+
+        <h2>🎓 Using the System</h2>
+
+        <div class="step">
+            <h3>Understanding the SQL Monitor</h3>
+            <ul>
+                <li><strong>Current Query:</strong> Shows the most recent SQL executed</li>
+                <li><strong>History Button:</strong> View all SQL queries from this session</li>
+                <li><strong>Copy Button:</strong> Copy query to clipboard</li>
+                <li><strong>Execute Button:</strong> Run the query in SQL Executor</li>
+                <li><strong>Clear Button:</strong> Clear the history</li>
+                <li><strong>Minimize Button:</strong> Hide/show the monitor</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>SQL Executor Tab</h3>
+            <p>Navigate to the "SQL Executor" tab to:</p>
+            <ul>
+                <li>Write custom SQL queries</li>
+                <li>Test SELECT, INSERT, UPDATE, DELETE operations</li>
+                <li>See real-time results</li>
+                <li>Learn by experimentation</li>
+            </ul>
+            
+            <p><strong>Example queries to try:</strong></p>
+            <pre>-- View all products with their categories
+SELECT p.product_name, c.category_name, p.unit_price 
+FROM products p 
+LEFT JOIN categories c ON p.category_id = c.category_id;
+
+-- Count products by category
+SELECT c.category_name, COUNT(p.product_id) as count 
+FROM categories c 
+LEFT JOIN products p ON c.category_id = p.category_id 
+GROUP BY c.category_id, c.category_name;
+
+-- View low stock products
+SELECT * FROM vw_low_stock_products;
+
+-- Products above average price
+SELECT product_name, unit_price 
+FROM products 
+WHERE unit_price > (SELECT AVG(unit_price) FROM products);</pre>
+        </div>
+
+        <h2>🔧 Troubleshooting</h2>
+
+        <div class="step error">
+            <h3>❌ "Connection failed" Error</h3>
+            <ul>
+                <li>Verify MySQL is running in XAMPP Control Panel</li>
+                <li>Check if database <code>inventory_system</code> exists in phpMyAdmin</li>
+                <li>Verify credentials in <code>api/config.php</code></li>
+                <li>Try restarting MySQL in XAMPP</li>
+            </ul>
+        </div>
+
+        <div class="step warning">
+            <h3>⚠️ Blank Page or Not Loading</h3>
+            <ul>
+                <li>Ensure Apache is running in XAMPP</li>
+                <li>Check the URL: <code>http://localhost/inventoryflowv2/</code></li>
+                <li>Verify files are in correct directory: <code>C:\xampp\htdocs\inventoryflowv2\</code></li>
+                <li>Check browser console (F12) for JavaScript errors</li>
+            </ul>
+        </div>
+
+        <div class="step warning">
+            <h3>⚠️ SQL Queries Not Showing</h3>
+            <ul>
+                <li>Open browser console (F12) to check for errors</li>
+                <li>Verify API files exist in <code>api/</code> folder</li>
+                <li>Check if PHP is working: create a file <code>test.php</code> with <code>&lt;?php phpinfo(); ?&gt;</code></li>
+                <li>Clear browser cache and reload</li>
+            </ul>
+        </div>
+
+        <h2>📚 Learning Path</h2>
+
+        <div class="step">
+            <h3>Recommended Learning Sequence</h3>
+            <ol>
+                <li><strong>Explore the Dashboard:</strong> Understand the overview and statistics queries</li>
+                <li><strong>Add Data:</strong> Create suppliers, categories, and products - watch the INSERT queries</li>
+                <li><strong>View Data:</strong> Browse different sections - see SELECT queries with JOINs</li>
+                <li><strong>Update Data:</strong> Modify records - observe UPDATE queries</li>
+                <li><strong>Inventory Operations:</strong> Adjust stock, add transactions - complex multi-query operations</li>
+                <li><strong>SQL Executor:</strong> Write custom queries to explore the database</li>
+                <li><strong>Advanced Queries:</strong> Try aggregate functions, subqueries, and views</li>
+            </ol>
+        </div>
+
+        <h2>🎯 SQL Operations Coverage</h2>
+
+        <div class="step success">
+            <h3>All Required SQL Operations Demonstrated</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <strong>Basic Operations:</strong>
+                    <ul>
+                        <li>✓ CREATE TABLE</li>
+                        <li>✓ DROP TABLE</li>
+                        <li>✓ ALTER TABLE</li>
+                        <li>✓ INSERT INTO</li>
+                        <li>✓ SELECT</li>
+                        <li>✓ UPDATE</li>
+                        <li>✓ DELETE</li>
+                    </ul>
+                </div>
+                <div>
+                    <strong>Constraints:</strong>
+                    <ul>
+                        <li>✓ PRIMARY KEY</li>
+                        <li>✓ FOREIGN KEY</li>
+                        <li>✓ UNIQUE</li>
+                        <li>✓ NOT NULL</li>
+                        <li>✓ CHECK</li>
+                        <li>✓ DEFAULT</li>
+                        <li>✓ ON DELETE CASCADE</li>
+                    </ul>
+                </div>
+                <div>
+                    <strong>Query Clauses:</strong>
+                    <ul>
+                        <li>✓ WHERE</li>
+                        <li>✓ BETWEEN</li>
+                        <li>✓ IN</li>
+                        <li>✓ LIKE</li>
+                        <li>✓ ORDER BY</li>
+                        <li>✓ GROUP BY</li>
+                        <li>✓ HAVING</li>
+                    </ul>
+                </div>
+                <div>
+                    <strong>Advanced:</strong>
+                    <ul>
+                        <li>✓ INNER JOIN</li>
+                        <li>✓ LEFT OUTER JOIN</li>
+                        <li>✓ Aggregate Functions</li>
+                        <li>✓ Subqueries</li>
+                        <li>✓ UNION</li>
+                        <li>✓ Views</li>
+                        <li>✓ DISTINCT</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>📞 Quick Links</h2>
+        
+        <a href="index.html" class="btn">Open Application</a>
+        <a href="http://localhost/phpmyadmin" class="btn" target="_blank">phpMyAdmin</a>
+        <a href="README.md" class="btn">Documentation</a>
+
+        <div class="step success" style="margin-top: 40px;">
+            <h3>🎉 Ready to Start!</h3>
+            <p>If all steps completed successfully, you're ready to use the Inventory Management System. Click the "Open Application" button above or navigate to <code>http://localhost/inventoryflowv2/</code></p>
+            <p><strong>Happy Learning!</strong> Watch the SQL queries as you interact with the system.</p>
+        </div>
+    </div>
+</body>
+</html>

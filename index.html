@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management System with SQL Viewer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1><i class="fas fa-boxes"></i> Inventory Management System</h1>
+            <p class="subtitle">Learn SQL with Real-time Query Visualization</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="main-nav">
+            <button class="nav-btn active" data-section="dashboard"><i class="fas fa-home"></i> Dashboard</button>
+            <button class="nav-btn" data-section="products"><i class="fas fa-box"></i> Products</button>
+            <button class="nav-btn" data-section="inventory"><i class="fas fa-warehouse"></i> Inventory</button>
+            <button class="nav-btn" data-section="suppliers"><i class="fas fa-truck"></i> Suppliers</button>
+            <button class="nav-btn" data-section="purchase-orders"><i class="fas fa-file-invoice"></i> Purchase Orders</button>
+            <button class="nav-btn" data-section="transactions"><i class="fas fa-exchange-alt"></i> Transactions</button>
+            <button class="nav-btn" data-section="sql-executor"><i class="fas fa-terminal"></i> SQL Executor</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <h2>Dashboard</h2>
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-box"></i>
+                        <h3 id="total-products">0</h3>
+                        <p>Total Products</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-warehouse"></i>
+                        <h3 id="total-inventory">0</h3>
+                        <p>Total Inventory</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-truck"></i>
+                        <h3 id="total-suppliers">0</h3>
+                        <p>Total Suppliers</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-file-invoice"></i>
+                        <h3 id="pending-orders">0</h3>
+                        <p>Pending Orders</p>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h3>Recent Transactions</h3>
+                    <div id="recent-transactions-list" class="table-container"></div>
+                </div>
+            </section>
+
+            <!-- Products Section -->
+            <section id="products" class="content-section">
+                <h2>Products Management</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddProductForm()"><i class="fas fa-plus"></i> Add Product</button>
+                    <button class="btn btn-secondary" onclick="loadProducts()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+
+                <div id="add-product-form" class="form-container" style="display:none;">
+                    <h3>Add New Product</h3>
+                    <form id="product-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Product Name *</label>
+                                <input type="text" name="product_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Category *</label>
+                                <select name="category_id" required id="product-category-select"></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Unit Price *</label>
+                                <input type="number" name="unit_price" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Supplier *</label>
+                                <select name="supplier_id" required id="product-supplier-select"></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Reorder Level</label>
+                                <input type="number" name="reorder_level" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Unit of Measure</label>
+                                <input type="text" name="unit_of_measure" value="pieces">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Product</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideAddProductForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="products-list" class="table-container"></div>
+            </section>
+
+            <!-- Inventory Section -->
+            <section id="inventory" class="content-section">
+                <h2>Inventory Management</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showStockAdjustmentForm()"><i class="fas fa-edit"></i> Adjust Stock</button>
+                    <button class="btn btn-secondary" onclick="loadInventory()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+
+                <div id="stock-adjustment-form" class="form-container" style="display:none;">
+                    <h3>Stock Adjustment</h3>
+                    <form id="adjustment-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Product *</label>
+                                <select name="product_id" required id="adjustment-product-select"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Warehouse *</label>
+                                <select name="warehouse_id" required id="adjustment-warehouse-select"></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Old Quantity *</label>
+                                <input type="number" name="old_quantity" required readonly id="old-quantity-input">
+                            </div>
+                            <div class="form-group">
+                                <label>New Quantity *</label>
+                                <input type="number" name="new_quantity" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Reason *</label>
+                                <select name="reason" required>
+                                    <option value="">Select Reason</option>
+                                    <option value="DAMAGED">Damaged</option>
+                                    <option value="EXPIRED">Expired</option>
+                                    <option value="LOST">Lost</option>
+                                    <option value="FOUND">Found</option>
+                                    <option value="CYCLE_COUNT">Cycle Count</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Adjusted By *</label>
+                                <input type="text" name="adjusted_by" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea name="notes" rows="2"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Adjustment</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideStockAdjustmentForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="inventory-list" class="table-container"></div>
+            </section>
+
+            <!-- Suppliers Section -->
+            <section id="suppliers" class="content-section">
+                <h2>Suppliers Management</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddSupplierForm()"><i class="fas fa-plus"></i> Add Supplier</button>
+                    <button class="btn btn-secondary" onclick="loadSuppliers()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+
+                <div id="add-supplier-form" class="form-container" style="display:none;">
+                    <h3>Add New Supplier</h3>
+                    <form id="supplier-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Supplier Name *</label>
+                                <input type="text" name="supplier_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Person</label>
+                                <input type="text" name="contact_person">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" name="email">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <textarea name="address" rows="2"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Supplier</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideAddSupplierForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="suppliers-list" class="table-container"></div>
+            </section>
+
+            <!-- Purchase Orders Section -->
+            <section id="purchase-orders" class="content-section">
+                <h2>Purchase Orders</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddPOForm()"><i class="fas fa-plus"></i> Create Purchase Order</button>
+                    <button class="btn btn-secondary" onclick="loadPurchaseOrders()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+
+                <div id="add-po-form" class="form-container" style="display:none;">
+                    <h3>Create Purchase Order</h3>
+                    <form id="po-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>PO Number *</label>
+                                <input type="text" name="po_number" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Supplier *</label>
+                                <select name="supplier_id" required id="po-supplier-select"></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Order Date *</label>
+                                <input type="date" name="order_date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Expected Delivery</label>
+                                <input type="date" name="expected_delivery">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea name="notes" rows="2"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Purchase Order</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideAddPOForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="purchase-orders-list" class="table-container"></div>
+            </section>
+
+            <!-- Transactions Section -->
+            <section id="transactions" class="content-section">
+                <h2>Inventory Transactions</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddTransactionForm()"><i class="fas fa-plus"></i> Add Transaction</button>
+                    <button class="btn btn-secondary" onclick="loadTransactions()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+
+                <div id="add-transaction-form" class="form-container" style="display:none;">
+                    <h3>Add Transaction</h3>
+                    <form id="transaction-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Product *</label>
+                                <select name="product_id" required id="transaction-product-select"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Warehouse *</label>
+                                <select name="warehouse_id" required id="transaction-warehouse-select"></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Transaction Type *</label>
+                                <select name="transaction_type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="IN">IN (Stock Received)</option>
+                                    <option value="OUT">OUT (Stock Issued)</option>
+                                    <option value="TRANSFER">TRANSFER</option>
+                                    <option value="ADJUSTMENT">ADJUSTMENT</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity Change *</label>
+                                <input type="number" name="quantity_change" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Unit Cost</label>
+                                <input type="number" name="unit_cost" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Reference Number</label>
+                                <input type="text" name="reference_number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea name="notes" rows="2"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Transaction</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideAddTransactionForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="transactions-list" class="table-container"></div>
+            </section>
+
+            <!-- SQL Executor Section -->
+            <section id="sql-executor" class="content-section">
+                <h2>SQL Query Executor</h2>
+                <p class="info-text">Execute raw SQL queries directly. Be careful with DELETE and UPDATE operations!</p>
+                
+                <div class="sql-executor-container">
+                    <div class="sql-input-area">
+                        <label>Enter SQL Query:</label>
+                        <textarea id="raw-sql-input" rows="8" placeholder="Example: SELECT * FROM products WHERE unit_price > 50 ORDER BY product_name"></textarea>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="executeRawSQL()"><i class="fas fa-play"></i> Execute Query</button>
+                            <button class="btn btn-secondary" onclick="clearSQLInput()"><i class="fas fa-eraser"></i> Clear</button>
+                        </div>
+                    </div>
+                    
+                    <div class="sql-output-area">
+                        <h3>Query Results</h3>
+                        <div id="sql-results" class="table-container"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- SQL Query Dialog Box -->
+        <div id="sql-dialog" class="sql-dialog">
+            <div class="sql-dialog-header">
+                <h3><i class="fas fa-database"></i> SQL Query Monitor</h3>
+                <div class="dialog-controls">
+                    <button class="btn-icon" onclick="toggleSQLHistory()" title="Toggle History">
+                        <i class="fas fa-history"></i>
+                    </button>
+                    <button class="btn-icon" onclick="clearSQLHistory()" title="Clear History">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="btn-icon" onclick="toggleSQLDialog()" title="Minimize">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="sql-dialog-content">
+                <div class="current-query-section">
+                    <h4>Current Query</h4>
+                    <div id="current-sql-query" class="sql-query-display">No query executed yet</div>
+                    <button class="btn btn-small" onclick="copySQLToClipboard()"><i class="fas fa-copy"></i> Copy</button>
+                    <button class="btn btn-small" onclick="executeCurrentSQL()"><i class="fas fa-play"></i> Execute</button>
+                </div>
+                
+                <div id="sql-history-section" class="sql-history-section" style="display:none;">
+                    <h4>Query History (<span id="history-count">0</span>)</h4>
+                    <div id="sql-history" class="sql-history"></div>
+                </div>
+            </div>
+        </div>
+
+        <button id="sql-dialog-toggle" class="sql-dialog-toggle" onclick="toggleSQLDialog()">
+            <i class="fas fa-database"></i> SQL Monitor
+        </button>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

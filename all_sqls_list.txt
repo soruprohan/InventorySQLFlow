@@ -1,0 +1,107 @@
+DROP TABLE [table_name]
+
+CREATE TABLE [table_name] ( ... )
+
+ALTER TABLE [table_name] ADD [column_name] [datatype]
+
+ALTER TABLE [table_name] MODIFY [column_name] [new_datatype]
+
+ALTER TABLE [table_name] RENAME COLUMN [old_name] TO [new_name]
+
+ALTER TABLE [table_name] DROP COLUMN [column_name]
+
+INSERT INTO [table_name] VALUES ( ... )
+
+SELECT [column] FROM [table] WHERE [condition]
+
+UPDATE [table] SET [column] = [value] WHERE [condition]
+
+DELETE FROM [table] WHERE [condition]
+
+ON DELETE CASCADE
+
+ON DELETE SET NULL
+
+UNIQUE
+
+NOT NULL
+
+CHECK (condition)
+
+DEFAULT [value]
+
+SELECT DISTINCT [column] FROM [table]
+
+SELECT ALL [column] FROM [table]
+
+SELECT [column] AS [alias] FROM [table]
+
+SELECT * FROM [table] WHERE [column] BETWEEN [value1] AND [value2]
+
+SELECT * FROM [table] WHERE [column] IN (list)
+
+SELECT * FROM [table] ORDER BY [column] [ASC|DESC]
+
+SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ...
+
+LIKE '%pattern%'
+
+REGEXP_SUBSTR(column, '[0-9]+')
+
+MOD(column, value)
+
+COUNT(column)
+
+SUM(column)
+
+AVG(column)
+
+MIN(column)
+
+MAX(column)
+
+NVL(column, default_value)
+
+GROUP BY [column]
+
+HAVING [condition]
+
+Subquery in SELECT, FROM, WHERE
+
+INSERT INTO ... SELECT ...
+
+UNION
+
+UNION ALL
+
+INTERSECT
+
+MINUS
+
+CREATE OR REPLACE VIEW [view_name] AS SELECT ...
+
+SELECT * FROM [view_name]
+
+UPDATE [view_name] SET ... WHERE ...
+
+Implicit Join: FROM table1, table2 WHERE ...
+
+Explicit Join: JOIN ... ON ...
+
+USING (column)
+
+NATURAL JOIN
+
+CROSS JOIN
+
+INNER JOIN
+
+LEFT OUTER JOIN
+
+RIGHT OUTER JOIN
+
+FULL OUTER JOIN
+
+Self Join: FROM table alias1, table alias2
+
+Common Table Expression (CTE): WITH [cte_name] AS ( ... )

@@ -1,0 +1,282 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                    INVENTORY MANAGEMENT SYSTEM                               ║
+║                   WITH SQL QUERY VISUALIZATION                               ║
+║                                                                              ║
+║                           QUICK START GUIDE                                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  STEP 1: START XAMPP                                                         │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   1. Open XAMPP Control Panel
+   2. Click [Start] next to Apache
+   3. Click [Start] next to MySQL
+   4. Both should show green "Running" status
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  STEP 2: CREATE DATABASE                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   METHOD A - Using phpMyAdmin (Recommended):
+   
+   1. Open browser → http://localhost/phpmyadmin
+   2. Click "New" in left sidebar
+   3. Database name: inventory_system
+   4. Click [Create]
+   5. Select "inventory_system" database
+   6. Click "SQL" tab
+   7. Open file: install_database.sql (from this folder)
+   8. Copy ALL content and paste in SQL tab
+   9. Click [Go]
+   10. Wait for "Success" message
+
+   METHOD B - Using Command Line:
+   
+   cd C:\xampp\mysql\bin
+   mysql -u root -p
+   CREATE DATABASE inventory_system;
+   USE inventory_system;
+   SOURCE C:/xampp/htdocs/inventoryflowv2/install_database.sql;
+   EXIT;
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  STEP 3: CONFIGURE (Optional - only if you have MySQL password)             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   1. Open: api/config.php
+   2. Change DB_PASS if you set a MySQL password
+   3. Default: DB_PASS = '' (empty string)
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  STEP 4: LAUNCH APPLICATION                                                  │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   1. Open browser
+   2. Navigate to: http://localhost/inventoryflowv2/
+   3. You should see the Inventory Management System dashboard!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  WHAT YOU'LL SEE                                                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   ✓ Dashboard with statistics (products, inventory, suppliers, orders)
+   ✓ Navigation menu (Dashboard, Products, Inventory, Suppliers, etc.)
+   ✓ SQL Query Monitor (bottom-right corner)
+   ✓ Sample data already loaded!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  FIRST THINGS TO TRY                                                         │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   1. EXPLORE SECTIONS
+      - Click on different menu items
+      - Watch SQL queries appear in the monitor
+      - See how data is displayed
+
+   2. VIEW SQL HISTORY
+      - Click the history icon in SQL Monitor
+      - See all queries executed
+      - Click any query to view it again
+
+   3. ADD SOME DATA
+      - Go to Suppliers → Add Supplier
+      - Fill the form and submit
+      - Watch the INSERT query in SQL Monitor
+
+   4. TRY SQL EXECUTOR
+      - Click "SQL Executor" tab
+      - Copy queries from TEST_QUERIES.sql
+      - Paste and execute
+      - See results instantly
+
+   5. VIEW SAMPLE DATA
+      - Products section shows sample products
+      - Inventory shows stock levels
+      - Transactions show recent activities
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  LEARNING PATH (RECOMMENDED)                                                 │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   Day 1: Basic Exploration
+   ────────────────────────
+   • Navigate all sections
+   • Add a supplier
+   • Add a product
+   • View the SQL queries generated
+   
+   Day 2: Understanding Queries
+   ────────────────────────────
+   • Open TEST_QUERIES.sql
+   • Try basic SELECT queries in SQL Executor
+   • Compare with queries from clicking buttons
+   
+   Day 3: Advanced Operations
+   ─────────────────────────
+   • Try JOIN queries
+   • Use aggregate functions
+   • Create subqueries
+   • Explore views
+   
+   Day 4: Real Scenarios
+   ────────────────────
+   • Add inventory transactions
+   • Adjust stock levels
+   • Create purchase orders
+   • View how multiple tables interact
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  HELPFUL FILES                                                               │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   📄 SETUP_GUIDE.html      → Detailed setup with screenshots
+   📄 README.md             → Complete documentation
+   📄 TEST_QUERIES.sql      → 50+ ready-to-use SQL queries
+   📄 SQL_REFERENCE.sql     → Comprehensive SQL reference guide
+   📄 PROJECT_FILES.txt     → Project structure and file descriptions
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  TROUBLESHOOTING                                                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   ❌ "Connection failed" error:
+      → Check MySQL is running in XAMPP
+      → Verify database "inventory_system" exists
+      → Check api/config.php credentials
+
+   ❌ Blank page or errors:
+      → Ensure Apache is running
+      → Check URL: http://localhost/inventoryflowv2/
+      → Press F12 to see browser console errors
+      → Check files are in correct folder
+
+   ❌ SQL queries not showing:
+      → Clear browser cache
+      → Check browser console (F12) for errors
+      → Verify all api/*.php files exist
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  KEY FEATURES                                                                │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   ✨ REAL-TIME SQL DISPLAY
+      Every button click shows the exact SQL query executed
+   
+   ✨ SQL HISTORY
+      Complete history of all queries in your session
+   
+   ✨ RAW SQL EXECUTOR
+      Write and test your own SQL queries
+   
+   ✨ FULL CRUD OPERATIONS
+      Create, Read, Update, Delete for all entities
+   
+   ✨ EDUCATIONAL DESIGN
+      Learn SQL by seeing it in action
+   
+   ✨ SAMPLE DATA INCLUDED
+      Pre-loaded with products, suppliers, inventory
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  SQL OPERATIONS COVERED                                                      │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   ✓ CREATE, DROP, ALTER TABLE        ✓ MIN, MAX, AVG, SUM, COUNT
+   ✓ INSERT, SELECT, UPDATE, DELETE   ✓ GROUP BY, HAVING
+   ✓ PRIMARY KEY, FOREIGN KEY         ✓ Subqueries
+   ✓ INNER JOIN, LEFT OUTER JOIN      ✓ UNION, UNION ALL
+   ✓ WHERE, BETWEEN, IN, LIKE         ✓ CREATE VIEW
+   ✓ ORDER BY, DISTINCT               ✓ And much more!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  EXAMPLE QUERIES TO TRY IN SQL EXECUTOR                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   -- View all products
+   SELECT * FROM products;
+
+   -- Products with their categories
+   SELECT p.product_name, c.category_name, p.unit_price 
+   FROM products p 
+   LEFT JOIN categories c ON p.category_id = c.category_id;
+
+   -- Count products by category
+   SELECT c.category_name, COUNT(p.product_id) as count 
+   FROM categories c 
+   LEFT JOIN products p ON c.category_id = p.category_id 
+   GROUP BY c.category_id, c.category_name;
+
+   -- Products above average price
+   SELECT product_name, unit_price 
+   FROM products 
+   WHERE unit_price > (SELECT AVG(unit_price) FROM products);
+
+   -- View low stock products
+   SELECT * FROM vw_low_stock_products;
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  SYSTEM REQUIREMENTS                                                         │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   ✓ XAMPP (Apache + MySQL)
+   ✓ Modern web browser
+   ✓ 500 MB free disk space
+   ✓ 2 GB RAM minimum
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  PROJECT STRUCTURE                                                           │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   inventoryflowv2/
+   ├── index.html                  Main application
+   ├── install_database.sql        Database setup (RUN THIS!)
+   ├── SETUP_GUIDE.html           Detailed guide
+   ├── README.md                  Documentation
+   ├── TEST_QUERIES.sql           Practice queries
+   ├── SQL_REFERENCE.sql          SQL guide
+   ├── QUICK_START.txt            This file
+   ├── css/
+   │   └── style.css              Styles
+   ├── js/
+   │   └── app.js                 Frontend logic
+   └── api/                       Backend PHP files
+       ├── config.php             Database config
+       ├── dashboard.php          Dashboard stats
+       ├── products.php           Products API
+       ├── suppliers.php          Suppliers API
+       ├── inventory.php          Inventory API
+       ├── categories.php         Categories API
+       ├── warehouses.php         Warehouses API
+       ├── purchase_orders.php    Orders API
+       ├── transactions.php       Transactions API
+       ├── adjustments.php        Adjustments API
+       └── execute_sql.php        SQL executor API
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  SUPPORT                                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   📧 For setup help: See SETUP_GUIDE.html
+   📚 For SQL help: See SQL_REFERENCE.sql
+   🔍 For examples: See TEST_QUERIES.sql
+   📖 For details: See README.md
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  READY TO START?                                                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   1. Complete Steps 1-4 above
+   2. Open http://localhost/inventoryflowv2/
+   3. Click around and watch the SQL Monitor
+   4. Have fun learning SQL!
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                            HAPPY LEARNING! 🚀                                ║
+║                                                                              ║
+║            Watch the SQL queries as you interact with the system!           ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
