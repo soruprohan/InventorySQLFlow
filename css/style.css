@@ -683,29 +683,53 @@ table tbody tr:last-child td {
     justify-content: center;
     align-items: center;
     z-index: 10000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-content {
     background: white;
-    border-radius: 8px;
+    border-radius: 12px;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--light), white);
 }
 
 .modal-header h3 {
     margin: 0;
-    color: var(--primary-color);
+    color: var(--dark);
+    font-size: 1.3rem;
 }
 
 .modal-close {
@@ -720,19 +744,46 @@ table tbody tr:last-child td {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s;
 }
 
 .modal-close:hover {
     color: var(--danger-color);
+    transform: scale(1.1);
 }
 
 .modal-body {
-    padding: 20px;
+    padding: 20px 25px;
     line-height: 1.8;
 }
 
+.modal-body p {
+    margin-bottom: 12px;
+    color: var(--dark);
+}
+
+.modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.modal-body strong {
+    color: var(--dark);
+    font-weight: 600;
+    display: inline-block;
+    min-width: 160px;
+}
+
+.modal-body .status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
 .modal-footer {
-    padding: 15px 20px;
-    border-top: 1px solid #e5e7eb;
+    padding: 15px 25px;
+    border-top: 1px solid var(--border);
     text-align: right;
+    background: var(--light);
 }

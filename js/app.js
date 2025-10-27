@@ -33,11 +33,19 @@ function showInfoDialog(message, title = 'Information') {
     modalTitle.textContent = title;
     modalBody.innerHTML = message;
     modal.style.display = 'flex';
+    
+    // Close modal when clicking outside
+    modal.onclick = function(event) {
+        if (event.target === modal) {
+            closeInfoDialog();
+        }
+    };
 }
 
 function closeInfoDialog() {
     const modal = document.getElementById('info-modal');
     modal.style.display = 'none';
+    modal.onclick = null; // Remove event listener
 }
 
 // Navigation Setup
@@ -312,11 +320,29 @@ function viewProduct(productId) {
         .then(data => {
             if (data.success && data.data) {
                 const product = data.data;
-                alert(`Product Details:\n\nName: ${product.product_name}\nPrice: $${product.unit_price}\nCategory: ${product.category_name || 'N/A'}\nSupplier: ${product.supplier_name || 'N/A'}\nDescription: ${product.description || 'N/A'}`);
+                const details = `
+                    <div style="line-height: 1.8;">
+                        <p><strong>Product Name:</strong> ${product.product_name}</p>
+                        <p><strong>Description:</strong> ${product.description || 'N/A'}</p>
+                        <p><strong>Unit Price:</strong> $${parseFloat(product.unit_price).toFixed(2)}</p>
+                        <p><strong>Unit of Measure:</strong> ${product.unit_of_measure || 'N/A'}</p>
+                        <p><strong>Reorder Level:</strong> ${product.reorder_level}</p>
+                        <p><strong>Category:</strong> ${product.category_name || 'N/A'}</p>
+                        <p><strong>Supplier:</strong> ${product.supplier_name || 'N/A'}</p>
+                        <p><strong>Status:</strong> ${product.is_active == 1 ? '<span style="color: #10b981;">Active</span>' : '<span style="color: #ef4444;">Inactive</span>'}</p>
+                        <p><strong>Created Date:</strong> ${formatDate(product.created_date)}</p>
+                    </div>
+                `;
+                showInfoDialog(details, 'Product Details');
                 if (data.sql) displaySQL(data.sql);
+            } else {
+                alert('Product not found');
             }
         })
-        .catch(error => console.error('Error viewing product:', error));
+        .catch(error => {
+            console.error('Error viewing product:', error);
+            alert('An error occurred while loading product details');
+        });
 }
 
 function editProduct(productId) {
@@ -444,7 +470,7 @@ function displayInventory(inventory) {
         return;
     }
     
-    let html = '<table><thead><tr><th>Product</th><th>Warehouse</th><th>On Hand</th><th>Reserved</th><th>Available</th><th>Avg Cost</th><th>Last Updated</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Product</th><th>Warehouse</th><th>On Hand</th><th>Reserved</th><th>Available</th><th>Avg Cost</th><th>Last Updated</th><th>Actions</th></tr></thead><tbody>';
     
     inventory.forEach(inv => {
         const available = inv.quantity_on_hand - inv.quantity_reserved;
@@ -457,12 +483,46 @@ function displayInventory(inventory) {
                 <td><strong>${available}</strong></td>
                 <td>$${parseFloat(inv.avg_cost).toFixed(2)}</td>
                 <td>${formatDateTime(inv.last_updated)}</td>
+                <td class="table-actions">
+                    <button class="btn btn-small btn-info" onclick="viewInventory(${inv.product_id}, ${inv.warehouse_id})"><i class="fas fa-eye"></i> View</button>
+                </td>
             </tr>
         `;
     });
     
     html += '</tbody></table>';
     container.innerHTML = html;
+}
+
+function viewInventory(productId, warehouseId) {
+    fetch(`api/inventory.php?product_id=${productId}&warehouse_id=${warehouseId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data && data.data.length > 0) {
+                const inv = data.data[0];
+                const available = inv.quantity_on_hand - inv.quantity_reserved;
+                const details = `
+                    <div style="line-height: 1.8;">
+                        <p><strong>Product:</strong> ${inv.product_name}</p>
+                        <p><strong>Warehouse:</strong> ${inv.warehouse_name}</p>
+                        <p><strong>Quantity on Hand:</strong> ${inv.quantity_on_hand}</p>
+                        <p><strong>Quantity Reserved:</strong> ${inv.quantity_reserved}</p>
+                        <p><strong>Available Quantity:</strong> <span style="color: #10b981; font-weight: bold;">${available}</span></p>
+                        <p><strong>Average Cost:</strong> $${parseFloat(inv.avg_cost).toFixed(2)}</p>
+                        <p><strong>Total Value:</strong> $${(inv.quantity_on_hand * inv.avg_cost).toFixed(2)}</p>
+                        <p><strong>Last Updated:</strong> ${formatDateTime(inv.last_updated)}</p>
+                    </div>
+                `;
+                showInfoDialog(details, 'Inventory Details');
+                if (data.sql) displaySQL(data.sql);
+            } else {
+                alert('Inventory record not found');
+            }
+        })
+        .catch(error => {
+            console.error('Error viewing inventory:', error);
+            alert('An error occurred while loading inventory details');
+        });
 }
 
 function showStockAdjustmentForm() {
@@ -548,7 +608,8 @@ function displaySuppliers(suppliers) {
                 <td>${supplier.email || 'N/A'}</td>
                 <td>${supplier.address || 'N/A'}</td>
                 <td class="table-actions">
-                    <button class="btn btn-small btn-danger" onclick="deleteSupplier(${supplier.supplier_id})">Delete</button>
+                    <button class="btn btn-small btn-info" onclick="viewSupplier(${supplier.supplier_id})"><i class="fas fa-eye"></i> View</button>
+                    <button class="btn btn-small btn-danger" onclick="deleteSupplier(${supplier.supplier_id})"><i class="fas fa-trash"></i> Delete</button>
                 </td>
             </tr>
         `;
@@ -606,6 +667,35 @@ function deleteSupplier(supplierId) {
         }
     })
     .catch(error => console.error('Error deleting supplier:', error));
+}
+
+function viewSupplier(supplierId) {
+    fetch(`api/suppliers.php?id=${supplierId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const supplier = data.data;
+                const details = `
+                    <div style="line-height: 1.8;">
+                        <p><strong>Supplier ID:</strong> ${supplier.supplier_id}</p>
+                        <p><strong>Supplier Name:</strong> ${supplier.supplier_name}</p>
+                        <p><strong>Contact Person:</strong> ${supplier.contact_person || 'N/A'}</p>
+                        <p><strong>Phone:</strong> ${supplier.phone || 'N/A'}</p>
+                        <p><strong>Email:</strong> ${supplier.email || 'N/A'}</p>
+                        <p><strong>Address:</strong> ${supplier.address || 'N/A'}</p>
+                        <p><strong>Created Date:</strong> ${formatDate(supplier.created_date)}</p>
+                    </div>
+                `;
+                showInfoDialog(details, 'Supplier Details');
+                if (data.sql) displaySQL(data.sql);
+            } else {
+                alert('Supplier not found');
+            }
+        })
+        .catch(error => {
+            console.error('Error viewing supplier:', error);
+            alert('An error occurred while loading supplier details');
+        });
 }
 
 // Purchase Orders Management
@@ -692,11 +782,28 @@ function viewPO(poId) {
         .then(data => {
             if (data.success && data.data) {
                 const po = data.data;
-                alert(`Purchase Order Details:\n\nPO Number: ${po.po_number}\nSupplier: ${po.supplier_name}\nStatus: ${po.status}\nTotal: $${po.total_amount}\nNotes: ${po.notes || 'N/A'}`);
+                const details = `
+                    <div style="line-height: 1.8;">
+                        <p><strong>PO Number:</strong> ${po.po_number}</p>
+                        <p><strong>Supplier:</strong> ${po.supplier_name || 'N/A'}</p>
+                        <p><strong>Order Date:</strong> ${formatDate(po.order_date)}</p>
+                        <p><strong>Expected Delivery:</strong> ${po.expected_delivery ? formatDate(po.expected_delivery) : 'N/A'}</p>
+                        <p><strong>Status:</strong> <span class="status-badge status-${po.status.toLowerCase()}">${po.status}</span></p>
+                        <p><strong>Total Amount:</strong> $${parseFloat(po.total_amount || 0).toFixed(2)}</p>
+                        <p><strong>Notes:</strong> ${po.notes || 'No notes available'}</p>
+                        <p><strong>Created Date:</strong> ${formatDateTime(po.created_date)}</p>
+                    </div>
+                `;
+                showInfoDialog(details, 'Purchase Order Details');
                 if (data.sql) displaySQL(data.sql);
+            } else {
+                alert('Purchase order not found');
             }
         })
-        .catch(error => console.error('Error viewing purchase order:', error));
+        .catch(error => {
+            console.error('Error viewing purchase order:', error);
+            alert('An error occurred while loading purchase order details');
+        });
 }
 
 function deletePO(poId) {
@@ -934,22 +1041,29 @@ function viewTransaction(transactionId) {
                 const trans = Array.isArray(data.data) ? data.data[0] : data.data;
                 
                 const details = `
-                    <strong>Transaction ID:</strong> ${trans.transaction_id}<br>
-                    <strong>Product:</strong> ${trans.product_name || 'N/A'}<br>
-                    <strong>Warehouse:</strong> ${trans.warehouse_name || 'N/A'}<br>
-                    <strong>Type:</strong> ${trans.transaction_type}<br>
-                    <strong>Quantity Change:</strong> ${trans.quantity_change}<br>
-                    <strong>Unit Cost:</strong> $${trans.unit_cost ? parseFloat(trans.unit_cost).toFixed(2) : '0.00'}<br>
-                    <strong>Transaction Date:</strong> ${formatDateTime(trans.transaction_date)}<br>
-                    <strong>Reference Number:</strong> ${trans.reference_number || 'N/A'}<br>
-                    <strong>Notes:</strong> ${trans.notes || 'N/A'}
+                    <div style="line-height: 1.8;">
+                        <p><strong>Transaction ID:</strong> ${trans.transaction_id}</p>
+                        <p><strong>Product:</strong> ${trans.product_name || 'N/A'}</p>
+                        <p><strong>Warehouse:</strong> ${trans.warehouse_name || 'N/A'}</p>
+                        <p><strong>Type:</strong> <span class="status-badge status-${trans.transaction_type.toLowerCase()}">${trans.transaction_type}</span></p>
+                        <p><strong>Quantity Change:</strong> ${trans.quantity_change > 0 ? '+' : ''}${trans.quantity_change}</p>
+                        <p><strong>Unit Cost:</strong> $${trans.unit_cost ? parseFloat(trans.unit_cost).toFixed(2) : '0.00'}</p>
+                        <p><strong>Transaction Date:</strong> ${formatDateTime(trans.transaction_date)}</p>
+                        <p><strong>Reference Number:</strong> ${trans.reference_number || 'N/A'}</p>
+                        <p><strong>Notes:</strong> ${trans.notes || 'No notes available'}</p>
+                    </div>
                 `;
                 
                 showInfoDialog(details, 'Transaction Details');
                 if (data.sql) displaySQL(data.sql);
+            } else {
+                alert('Transaction not found');
             }
         })
-        .catch(error => console.error('Error loading transaction:', error));
+        .catch(error => {
+            console.error('Error loading transaction:', error);
+            alert('An error occurred while loading transaction details');
+        });
 }
 
 // Helper Functions for Dropdowns
