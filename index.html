@@ -112,6 +112,51 @@
                     </form>
                 </div>
 
+                <div id="edit-product-form" class="form-container" style="display:none;">
+                    <h3>Edit Product</h3>
+                    <form id="product-edit-form">
+                        <input type="hidden" name="product_id" id="edit-product-id">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Product Name *</label>
+                                <input type="text" name="product_name" id="edit-product-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Category *</label>
+                                <select name="category_id" required id="edit-product-category-select"></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Unit Price *</label>
+                                <input type="number" name="unit_price" id="edit-unit-price" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Supplier *</label>
+                                <select name="supplier_id" required id="edit-product-supplier-select"></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Reorder Level</label>
+                                <input type="number" name="reorder_level" id="edit-reorder-level" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Unit of Measure</label>
+                                <input type="text" name="unit_of_measure" id="edit-unit-measure" value="pieces">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" id="edit-description" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Product</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideEditProductForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
                 <div id="products-list" class="table-container"></div>
             </section>
 

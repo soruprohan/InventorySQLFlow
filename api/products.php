@@ -64,16 +64,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     }
 }
 
-// PUT - Update product (optional)
+// PUT - Update product
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     parse_str(file_get_contents("php://input"), $_PUT);
     
     if (isset($_PUT['product_id'])) {
         $id = intval($_PUT['product_id']);
         $product_name = sanitize($_PUT['product_name']);
+        $description = isset($_PUT['description']) ? sanitize($_PUT['description']) : '';
         $unit_price = floatval($_PUT['unit_price']);
+        $reorder_level = isset($_PUT['reorder_level']) ? intval($_PUT['reorder_level']) : 10;
+        $unit_of_measure = isset($_PUT['unit_of_measure']) ? sanitize($_PUT['unit_of_measure']) : 'pieces';
+        $category_id = isset($_PUT['category_id']) && $_PUT['category_id'] !== '' ? intval($_PUT['category_id']) : 'NULL';
+        $supplier_id = isset($_PUT['supplier_id']) && $_PUT['supplier_id'] !== '' ? intval($_PUT['supplier_id']) : 'NULL';
         
-        $sql = "UPDATE products SET product_name = '$product_name', unit_price = $unit_price WHERE product_id = $id";
+        $sql = "UPDATE products SET 
+                product_name = '$product_name', 
+                description = '$description', 
+                unit_price = $unit_price, 
+                reorder_level = $reorder_level, 
+                unit_of_measure = '$unit_of_measure', 
+                category_id = $category_id, 
+                supplier_id = $supplier_id 
+                WHERE product_id = $id";
         
         $result = executeQuery($sql, false);
         sendResponse($result);

@@ -121,6 +121,12 @@ function setupFormHandlers() {
             warehouseSelect.addEventListener('change', loadCurrentQuantity);
         }
     }
+    
+    // Product Edit Form
+    const productEditForm = document.getElementById('product-edit-form');
+    if (productEditForm) {
+        productEditForm.addEventListener('submit', handleProductUpdate);
+    }
 }
 
 // Dashboard Data Loading
@@ -197,18 +203,18 @@ function loadProducts() {
 
 function displayProducts(products) {
     const container = document.getElementById('products-list');
+    console.log('displayProducts called - Edit button should be visible');
     
     if (!products || products.length === 0) {
         container.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><p>No products found. Add your first product!</p></div>';
         return;
     }
     
-    let html = '<table><thead><tr><th>ID</th><th>Name</th><th>Category</th><th>Supplier</th><th>Price</th><th>Reorder Level</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Name</th><th>Category</th><th>Supplier</th><th>Price</th><th>Reorder Level</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
     
     products.forEach(product => {
         html += `
             <tr>
-                <td>${product.product_id}</td>
                 <td>${product.product_name}</td>
                 <td>${product.category_name || 'N/A'}</td>
                 <td>${product.supplier_name || 'N/A'}</td>
@@ -217,6 +223,7 @@ function displayProducts(products) {
                 <td>${product.is_active == 1 ? '<span class="status-badge status-received">Active</span>' : '<span class="status-badge status-cancelled">Inactive</span>'}</td>
                 <td class="table-actions">
                     <button class="btn btn-small btn-secondary" onclick="viewProduct(${product.product_id})">View</button>
+                    <button class="btn btn-small btn-primary" onclick="editProduct(${product.product_id})">Edit</button>
                     <button class="btn btn-small btn-danger" onclick="deleteProduct(${product.product_id})">Delete</button>
                 </td>
             </tr>
@@ -288,6 +295,110 @@ function viewProduct(productId) {
             }
         })
         .catch(error => console.error('Error viewing product:', error));
+}
+
+function editProduct(productId) {
+    // Load product data
+    fetch(`api/products.php?id=${productId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const product = data.data;
+                
+                // Populate the edit form
+                document.getElementById('edit-product-id').value = product.product_id;
+                document.getElementById('edit-product-name').value = product.product_name;
+                document.getElementById('edit-unit-price').value = product.unit_price;
+                document.getElementById('edit-reorder-level').value = product.reorder_level;
+                document.getElementById('edit-unit-measure').value = product.unit_of_measure;
+                document.getElementById('edit-description').value = product.description || '';
+                
+                // Load and set dropdowns
+                loadCategoriesForEdit(product.category_id);
+                loadSuppliersForEdit(product.supplier_id);
+                
+                // Show edit form
+                document.getElementById('edit-product-form').style.display = 'block';
+                
+                if (data.sql) displaySQL(data.sql);
+            }
+        })
+        .catch(error => console.error('Error loading product for edit:', error));
+}
+
+function hideEditProductForm() {
+    document.getElementById('edit-product-form').style.display = 'none';
+    document.getElementById('product-edit-form').reset();
+}
+
+function handleProductUpdate(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    // Convert FormData to URL-encoded string for PUT request
+    const params = new URLSearchParams();
+    for (const [key, value] of formData) {
+        params.append(key, value);
+    }
+    
+    fetch('api/products.php', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString()
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Product updated successfully!');
+            if (data.sql) displaySQL(data.sql);
+            hideEditProductForm();
+            loadProducts();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating product:', error);
+        alert('An error occurred while updating the product');
+    });
+}
+
+function loadCategoriesForEdit(selectedCategoryId) {
+    fetch('api/categories.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById('edit-product-category-select');
+                if (select) {
+                    select.innerHTML = '<option value="">Select Category</option>';
+                    data.data.forEach(cat => {
+                        const selected = cat.category_id == selectedCategoryId ? 'selected' : '';
+                        select.innerHTML += `<option value="${cat.category_id}" ${selected}>${cat.category_name}</option>`;
+                    });
+                }
+            }
+        })
+        .catch(error => console.error('Error loading categories:', error));
+}
+
+function loadSuppliersForEdit(selectedSupplierId) {
+    fetch('api/suppliers.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById('edit-product-supplier-select');
+                if (select) {
+                    select.innerHTML = '<option value="">Select Supplier</option>';
+                    data.data.forEach(sup => {
+                        const selected = sup.supplier_id == selectedSupplierId ? 'selected' : '';
+                        select.innerHTML += `<option value="${sup.supplier_id}" ${selected}>${sup.supplier_name}</option>`;
+                    });
+                }
+            }
+        })
+        .catch(error => console.error('Error loading suppliers:', error));
 }
 
 // Inventory Management
