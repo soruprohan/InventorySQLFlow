@@ -38,10 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $supplier_id = intval($_POST['supplier_id']);
     $order_date = sanitize($_POST['order_date']);
     $expected_delivery = isset($_POST['expected_delivery']) ? "'" . sanitize($_POST['expected_delivery']) . "'" : 'NULL';
+    $status = isset($_POST['status']) ? sanitize($_POST['status']) : 'PENDING';
+    $total_amount = isset($_POST['total_amount']) ? floatval($_POST['total_amount']) : 0;
     $notes = isset($_POST['notes']) ? sanitize($_POST['notes']) : '';
     
     $sql = "INSERT INTO purchase_orders (po_number, supplier_id, order_date, expected_delivery, status, total_amount, notes) 
-            VALUES ('$po_number', $supplier_id, '$order_date', $expected_delivery, 'PENDING', 0, '$notes')";
+            VALUES ('$po_number', $supplier_id, '$order_date', $expected_delivery, '$status', $total_amount, '$notes')";
     
     $result = executeQuery($sql, false);
     sendResponse($result);

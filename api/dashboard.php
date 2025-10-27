@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $totalProducts = $result1['success'] ? $result1['data'][0]['total'] : 0;
     
     // Total inventory
-    $sql2 = "SELECT SUM(quantity_on_hand) as total FROM inventory";
+    $sql2 = "SELECT  COUNT(*) as total FROM inventory";
     $result2 = executeQuery($sql2);
     $totalInventory = $result2['success'] && $result2['data'][0]['total'] ? $result2['data'][0]['total'] : 0;
     

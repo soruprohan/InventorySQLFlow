@@ -56,8 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     if (isset($_GET['id'])) {
         $id = intval($_GET['id']);
         
-        // Soft delete - set is_active to 0
-        $sql = "UPDATE products SET is_active = 0 WHERE product_id = $id";
+        // Hard delete - permanently remove from database
+        $sql = "DELETE FROM products WHERE product_id = $id";
         
         $result = executeQuery($sql, false);
         sendResponse($result);
