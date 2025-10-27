@@ -41,6 +41,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     sendResponse($result);
 }
 
+// PUT - Update category
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    parse_str(file_get_contents("php://input"), $_PUT);
+    
+    if (isset($_PUT['category_id'])) {
+        $id = intval($_PUT['category_id']);
+        $category_name = sanitize($_PUT['category_name']);
+        $description = isset($_PUT['description']) ? sanitize($_PUT['description']) : '';
+        
+        $sql = "UPDATE categories SET 
+                category_name = '$category_name', 
+                description = '$description' 
+                WHERE category_id = $id";
+        
+        $result = executeQuery($sql, false);
+        sendResponse($result);
+    }
+}
+
 // DELETE - Delete category
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     if (isset($_GET['id'])) {

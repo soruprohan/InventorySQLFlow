@@ -280,6 +280,30 @@ function setupFormHandlers() {
     if (productEditForm) {
         productEditForm.addEventListener('submit', handleProductUpdate);
     }
+    
+    // Category Form
+    const categoryForm = document.getElementById('category-form');
+    if (categoryForm) {
+        categoryForm.addEventListener('submit', handleCategorySubmit);
+    }
+    
+    // Category Edit Form
+    const categoryEditForm = document.getElementById('category-edit-form');
+    if (categoryEditForm) {
+        categoryEditForm.addEventListener('submit', handleCategoryUpdate);
+    }
+    
+    // Warehouse Form
+    const warehouseForm = document.getElementById('warehouse-form');
+    if (warehouseForm) {
+        warehouseForm.addEventListener('submit', handleWarehouseSubmit);
+    }
+    
+    // Warehouse Edit Form
+    const warehouseEditForm = document.getElementById('warehouse-edit-form');
+    if (warehouseEditForm) {
+        warehouseEditForm.addEventListener('submit', handleWarehouseUpdate);
+    }
 }
 
 // Dashboard Data Loading
@@ -710,6 +734,392 @@ function handleAdjustmentSubmit(e) {
         console.error('Error saving adjustment:', error);
         showToast('An error occurred while saving the adjustment', 'error');
     });
+}
+
+// Categories Management
+function loadCategories() {
+    fetch('api/categories.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayCategories(data.data);
+                if (data.sql) displaySQL(data.sql);
+            }
+        })
+        .catch(error => console.error('Error loading categories:', error));
+}
+
+function displayCategories(categories) {
+    const container = document.getElementById('categories-list');
+    
+    if (!categories || categories.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-tags"></i><p>No categories found. Add your first category!</p></div>';
+        return;
+    }
+    
+    let html = '<table><thead><tr><th>ID</th><th>Category Name</th><th>Description</th><th>Product Count</th><th>Actions</th></tr></thead><tbody>';
+    
+    categories.forEach(category => {
+        html += `
+            <tr>
+                <td>${category.category_id}</td>
+                <td><strong>${category.category_name}</strong></td>
+                <td>${category.description || 'N/A'}</td>
+                <td><span class="badge">${category.product_count || 0} products</span></td>
+                <td class="table-actions">
+                    <button class="btn btn-small btn-secondary" onclick="viewCategory(${category.category_id})"><i class="fas fa-eye"></i> View</button>
+                    <button class="btn btn-small btn-primary" onclick="editCategory(${category.category_id})"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn btn-small btn-danger" onclick="deleteCategory(${category.category_id})"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function showAddCategoryForm() {
+    document.getElementById('add-category-form').style.display = 'block';
+    document.getElementById('edit-category-form').style.display = 'none';
+}
+
+function hideAddCategoryForm() {
+    document.getElementById('add-category-form').style.display = 'none';
+    document.getElementById('category-form').reset();
+}
+
+function handleCategorySubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    fetch('api/categories.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Category added successfully!', 'success');
+            if (data.sql) displaySQL(data.sql);
+            hideAddCategoryForm();
+            loadCategories();
+        } else {
+            showToast(data.message, 'error', 'Failed to Add Category');
+        }
+    })
+    .catch(error => {
+        console.error('Error adding category:', error);
+        showToast('An error occurred while adding the category', 'error');
+    });
+}
+
+function editCategory(categoryId) {
+    fetch(`api/categories.php?id=${categoryId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const category = data.data;
+                
+                document.getElementById('edit-category-id').value = category.category_id;
+                document.getElementById('edit-category-name').value = category.category_name;
+                document.getElementById('edit-category-description').value = category.description || '';
+                
+                document.getElementById('edit-category-form').style.display = 'block';
+                document.getElementById('add-category-form').style.display = 'none';
+                
+                if (data.sql) displaySQL(data.sql);
+            }
+        })
+        .catch(error => console.error('Error loading category for edit:', error));
+}
+
+function hideEditCategoryForm() {
+    document.getElementById('edit-category-form').style.display = 'none';
+    document.getElementById('category-edit-form').reset();
+}
+
+function handleCategoryUpdate(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    const params = new URLSearchParams();
+    for (const [key, value] of formData) {
+        params.append(key, value);
+    }
+    
+    fetch('api/categories.php', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString()
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Category updated successfully!', 'success');
+            if (data.sql) displaySQL(data.sql);
+            hideEditCategoryForm();
+            loadCategories();
+        } else {
+            showToast(data.message, 'error', 'Failed to Update Category');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating category:', error);
+        showToast('An error occurred while updating the category', 'error');
+    });
+}
+
+function deleteCategory(categoryId) {
+    showConfirmDialog(
+        'Are you sure you want to delete this category? This action cannot be undone.',
+        () => {
+            fetch(`api/categories.php?id=${categoryId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Category deleted successfully!', 'success');
+                    if (data.sql) displaySQL(data.sql);
+                    loadCategories();
+                } else {
+                    showToast(data.message, 'error', 'Failed to Delete');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting category:', error);
+                showToast('An error occurred while deleting the category', 'error');
+            });
+        },
+        null,
+        'Delete Category'
+    );
+}
+
+function viewCategory(categoryId) {
+    fetch(`api/categories.php?id=${categoryId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const category = data.data;
+                const details = `
+                    <div style="line-height: 1.8;">
+                        <p><strong>Category ID:</strong> ${category.category_id}</p>
+                        <p><strong>Category Name:</strong> ${category.category_name}</p>
+                        <p><strong>Description:</strong> ${category.description || 'No description available'}</p>
+                        <p><strong>Product Count:</strong> ${category.product_count || 0} products</p>
+                    </div>
+                `;
+                showInfoDialog(details, 'Category Details');
+                if (data.sql) displaySQL(data.sql);
+            } else {
+                showToast('Category not found', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error viewing category:', error);
+            showToast('An error occurred while loading category details', 'error');
+        });
+}
+
+// Warehouses Management
+function loadWarehouses() {
+    fetch('api/warehouses.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayWarehouses(data.data);
+                if (data.sql) displaySQL(data.sql);
+            }
+        })
+        .catch(error => console.error('Error loading warehouses:', error));
+}
+
+function displayWarehouses(warehouses) {
+    const container = document.getElementById('warehouses-list');
+    
+    if (!warehouses || warehouses.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-building"></i><p>No warehouses found. Add your first warehouse!</p></div>';
+        return;
+    }
+    
+    let html = '<table><thead><tr><th>ID</th><th>Warehouse Name</th><th>Location</th><th>Manager</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+    
+    warehouses.forEach(warehouse => {
+        const status = warehouse.is_active == 1 ? '<span class="status-badge status-received">Active</span>' : '<span class="status-badge status-cancelled">Inactive</span>';
+        html += `
+            <tr>
+                <td>${warehouse.warehouse_id}</td>
+                <td><strong>${warehouse.warehouse_name}</strong></td>
+                <td>${warehouse.location || 'N/A'}</td>
+                <td>${warehouse.manager_name || 'N/A'}</td>
+                <td>${warehouse.phone || 'N/A'}</td>
+                <td>${status}</td>
+                <td class="table-actions">
+                    <button class="btn btn-small btn-secondary" onclick="viewWarehouse(${warehouse.warehouse_id})"><i class="fas fa-eye"></i> View</button>
+                    <button class="btn btn-small btn-primary" onclick="editWarehouse(${warehouse.warehouse_id})"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn btn-small btn-danger" onclick="deleteWarehouse(${warehouse.warehouse_id})"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function showAddWarehouseForm() {
+    document.getElementById('add-warehouse-form').style.display = 'block';
+    document.getElementById('edit-warehouse-form').style.display = 'none';
+}
+
+function hideAddWarehouseForm() {
+    document.getElementById('add-warehouse-form').style.display = 'none';
+    document.getElementById('warehouse-form').reset();
+}
+
+function handleWarehouseSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    fetch('api/warehouses.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Warehouse added successfully!', 'success');
+            if (data.sql) displaySQL(data.sql);
+            hideAddWarehouseForm();
+            loadWarehouses();
+        } else {
+            showToast(data.message, 'error', 'Failed to Add Warehouse');
+        }
+    })
+    .catch(error => {
+        console.error('Error adding warehouse:', error);
+        showToast('An error occurred while adding the warehouse', 'error');
+    });
+}
+
+function editWarehouse(warehouseId) {
+    fetch(`api/warehouses.php?id=${warehouseId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const warehouse = data.data;
+                
+                document.getElementById('edit-warehouse-id').value = warehouse.warehouse_id;
+                document.getElementById('edit-warehouse-name').value = warehouse.warehouse_name;
+                document.getElementById('edit-warehouse-location').value = warehouse.location || '';
+                document.getElementById('edit-warehouse-manager').value = warehouse.manager_name || '';
+                document.getElementById('edit-warehouse-phone').value = warehouse.phone || '';
+                
+                document.getElementById('edit-warehouse-form').style.display = 'block';
+                document.getElementById('add-warehouse-form').style.display = 'none';
+                
+                if (data.sql) displaySQL(data.sql);
+            }
+        })
+        .catch(error => console.error('Error loading warehouse for edit:', error));
+}
+
+function hideEditWarehouseForm() {
+    document.getElementById('edit-warehouse-form').style.display = 'none';
+    document.getElementById('warehouse-edit-form').reset();
+}
+
+function handleWarehouseUpdate(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    const params = new URLSearchParams();
+    for (const [key, value] of formData) {
+        params.append(key, value);
+    }
+    
+    fetch('api/warehouses.php', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString()
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Warehouse updated successfully!', 'success');
+            if (data.sql) displaySQL(data.sql);
+            hideEditWarehouseForm();
+            loadWarehouses();
+        } else {
+            showToast(data.message, 'error', 'Failed to Update Warehouse');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating warehouse:', error);
+        showToast('An error occurred while updating the warehouse', 'error');
+    });
+}
+
+function deleteWarehouse(warehouseId) {
+    showConfirmDialog(
+        'Are you sure you want to delete this warehouse? This action cannot be undone.',
+        () => {
+            fetch(`api/warehouses.php?id=${warehouseId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Warehouse deleted successfully!', 'success');
+                    if (data.sql) displaySQL(data.sql);
+                    loadWarehouses();
+                } else {
+                    showToast(data.message, 'error', 'Failed to Delete');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting warehouse:', error);
+                showToast('An error occurred while deleting the warehouse', 'error');
+            });
+        },
+        null,
+        'Delete Warehouse'
+    );
+}
+
+function viewWarehouse(warehouseId) {
+    fetch(`api/warehouses.php?id=${warehouseId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const warehouse = data.data;
+                const status = warehouse.is_active == 1 ? '<span style="color: #10b981;">Active</span>' : '<span style="color: #ef4444;">Inactive</span>';
+                const details = `
+                    <div style="line-height: 1.8;">
+                        <p><strong>Warehouse ID:</strong> ${warehouse.warehouse_id}</p>
+                        <p><strong>Warehouse Name:</strong> ${warehouse.warehouse_name}</p>
+                        <p><strong>Location:</strong> ${warehouse.location || 'N/A'}</p>
+                        <p><strong>Manager Name:</strong> ${warehouse.manager_name || 'N/A'}</p>
+                        <p><strong>Phone:</strong> ${warehouse.phone || 'N/A'}</p>
+                        <p><strong>Status:</strong> ${status}</p>
+                    </div>
+                `;
+                showInfoDialog(details, 'Warehouse Details');
+                if (data.sql) displaySQL(data.sql);
+            } else {
+                showToast('Warehouse not found', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error viewing warehouse:', error);
+            showToast('An error occurred while loading warehouse details', 'error');
+        });
 }
 
 // Suppliers Management

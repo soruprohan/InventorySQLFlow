@@ -560,6 +560,16 @@ table tbody tr:last-child td {
     font-weight: 500;
 }
 
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: var(--primary-color);
+    color: white;
+}
+
 .status-pending {
     background: #fef3c7;
     color: #92400e;

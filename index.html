@@ -20,6 +20,8 @@
             <button class="nav-btn active" data-section="dashboard"><i class="fas fa-home"></i> Dashboard</button>
             <button class="nav-btn" data-section="products"><i class="fas fa-box"></i> Products</button>
             <button class="nav-btn" data-section="inventory"><i class="fas fa-warehouse"></i> Inventory</button>
+            <button class="nav-btn" data-section="categories"><i class="fas fa-tags"></i> Categories</button>
+            <button class="nav-btn" data-section="warehouses"><i class="fas fa-building"></i> Warehouses</button>
             <button class="nav-btn" data-section="suppliers"><i class="fas fa-truck"></i> Suppliers</button>
             <button class="nav-btn" data-section="purchase-orders"><i class="fas fa-file-invoice"></i> Purchase Orders</button>
             <button class="nav-btn" data-section="transactions"><i class="fas fa-exchange-alt"></i> Transactions</button>
@@ -221,6 +223,126 @@
                 </div>
 
                 <div id="inventory-list" class="table-container"></div>
+            </section>
+
+            <!-- Categories Section -->
+            <section id="categories" class="content-section">
+                <h2>Categories Management</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddCategoryForm()"><i class="fas fa-plus"></i> Add Category</button>
+                    <button class="btn btn-secondary" onclick="loadCategories()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+
+                <!-- Add Category Form -->
+                <div id="add-category-form" class="form-container" style="display:none;">
+                    <h3>Add New Category</h3>
+                    <form id="category-form">
+                        <div class="form-group">
+                            <label>Category Name *</label>
+                            <input type="text" name="category_name" required placeholder="e.g., Electronics, Furniture">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" rows="3" placeholder="Category description (optional)"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Category</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideAddCategoryForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Edit Category Form -->
+                <div id="edit-category-form" class="form-container" style="display:none;">
+                    <h3>Edit Category</h3>
+                    <form id="category-edit-form">
+                        <input type="hidden" name="category_id" id="edit-category-id">
+                        <div class="form-group">
+                            <label>Category Name *</label>
+                            <input type="text" name="category_name" id="edit-category-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" id="edit-category-description" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Category</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideEditCategoryForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="categories-list" class="table-container"></div>
+            </section>
+
+            <!-- Warehouses Section -->
+            <section id="warehouses" class="content-section">
+                <h2>Warehouses Management</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddWarehouseForm()"><i class="fas fa-plus"></i> Add Warehouse</button>
+                    <button class="btn btn-secondary" onclick="loadWarehouses()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+
+                <!-- Add Warehouse Form -->
+                <div id="add-warehouse-form" class="form-container" style="display:none;">
+                    <h3>Add New Warehouse</h3>
+                    <form id="warehouse-form">
+                        <div class="form-group">
+                            <label>Warehouse Name *</label>
+                            <input type="text" name="warehouse_name" required placeholder="e.g., Main Warehouse">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" name="location" placeholder="Address or location">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Manager Name</label>
+                                <input type="text" name="manager_name" placeholder="Warehouse manager">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" name="phone" placeholder="Contact number">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Warehouse</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideAddWarehouseForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Edit Warehouse Form -->
+                <div id="edit-warehouse-form" class="form-container" style="display:none;">
+                    <h3>Edit Warehouse</h3>
+                    <form id="warehouse-edit-form">
+                        <input type="hidden" name="warehouse_id" id="edit-warehouse-id">
+                        <div class="form-group">
+                            <label>Warehouse Name *</label>
+                            <input type="text" name="warehouse_name" id="edit-warehouse-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" name="location" id="edit-warehouse-location">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Manager Name</label>
+                                <input type="text" name="manager_name" id="edit-warehouse-manager">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" name="phone" id="edit-warehouse-phone">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Warehouse</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideEditWarehouseForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="warehouses-list" class="table-container"></div>
             </section>
 
             <!-- Suppliers Section -->
@@ -521,6 +643,6 @@
         </div>
     </div>
 
-    <script src="js/app.js?v=11"></script>
+    <script src="js/app.js?v=12"></script>
 </body>
 </html>

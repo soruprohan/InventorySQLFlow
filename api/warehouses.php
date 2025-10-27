@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         
         sendResponse($result);
     } else {
-        // Get all warehouses WHERE active
-        $sql = "SELECT * FROM warehouses WHERE is_active = 1 ORDER BY warehouse_name";
+        // Get all warehouses (both active and inactive)
+        $sql = "SELECT * FROM warehouses ORDER BY warehouse_id DESC";
         
         $result = executeQuery($sql);
         sendResponse($result);
@@ -39,13 +39,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     sendResponse($result);
 }
 
+// PUT - Update warehouse
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    parse_str(file_get_contents("php://input"), $_PUT);
+    
+    if (isset($_PUT['warehouse_id'])) {
+        $id = intval($_PUT['warehouse_id']);
+        $warehouse_name = sanitize($_PUT['warehouse_name']);
+        $location = isset($_PUT['location']) ? sanitize($_PUT['location']) : '';
+        $manager_name = isset($_PUT['manager_name']) ? sanitize($_PUT['manager_name']) : '';
+        $phone = isset($_PUT['phone']) ? sanitize($_PUT['phone']) : '';
+        
+        $sql = "UPDATE warehouses SET 
+                warehouse_name = '$warehouse_name', 
+                location = '$location', 
+                manager_name = '$manager_name', 
+                phone = '$phone' 
+                WHERE warehouse_id = $id";
+        
+        $result = executeQuery($sql, false);
+        sendResponse($result);
+    }
+}
+
 // DELETE - Delete warehouse
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     if (isset($_GET['id'])) {
         $id = intval($_GET['id']);
         
-        // Soft delete
-        $sql = "UPDATE warehouses SET is_active = 0 WHERE warehouse_id = $id";
+        // Hard delete
+        $sql = "DELETE FROM warehouses WHERE warehouse_id = $id";
         
         $result = executeQuery($sql, false);
         sendResponse($result);
