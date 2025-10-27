@@ -82,6 +82,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     sendResponse($result);
 }
 
+// PUT - Update transaction
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    parse_str(file_get_contents("php://input"), $_PUT);
+    
+    if (isset($_PUT['transaction_id'])) {
+        $transaction_id = intval($_PUT['transaction_id']);
+        $product_id = intval($_PUT['product_id']);
+        $warehouse_id = intval($_PUT['warehouse_id']);
+        $transaction_type = sanitize($_PUT['transaction_type']);
+        $quantity_change = intval($_PUT['quantity_change']);
+        $unit_cost = isset($_PUT['unit_cost']) && $_PUT['unit_cost'] !== '' ? floatval($_PUT['unit_cost']) : 'NULL';
+        $reference_number = isset($_PUT['reference_number']) ? sanitize($_PUT['reference_number']) : '';
+        $notes = isset($_PUT['notes']) ? sanitize($_PUT['notes']) : '';
+        
+        $sql = "UPDATE inventory_transactions 
+                SET product_id = $product_id,
+                    warehouse_id = $warehouse_id,
+                    transaction_type = '$transaction_type',
+                    quantity_change = $quantity_change,
+                    unit_cost = $unit_cost,
+                    reference_number = '$reference_number',
+                    notes = '$notes'
+                WHERE transaction_id = $transaction_id";
+        
+        $result = executeQuery($sql, false);
+        sendResponse($result);
+    }
+}
+
 // DELETE - Delete transaction
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     if (isset($_GET['id'])) {

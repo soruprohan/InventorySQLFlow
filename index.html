@@ -388,6 +388,58 @@
                     </form>
                 </div>
 
+                <!-- Edit Transaction Form -->
+                <div id="edit-transaction-form" class="form-container" style="display:none;">
+                    <h3>Edit Transaction</h3>
+                    <form id="update-transaction-form">
+                        <input type="hidden" name="transaction_id" id="edit-transaction-id">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Product *</label>
+                                <select name="product_id" required id="edit-transaction-product-select"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Warehouse *</label>
+                                <select name="warehouse_id" required id="edit-transaction-warehouse-select"></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Transaction Type *</label>
+                                <select name="transaction_type" required id="edit-transaction-type">
+                                    <option value="">Select Type</option>
+                                    <option value="IN">IN (Stock Received)</option>
+                                    <option value="OUT">OUT (Stock Issued)</option>
+                                    <option value="TRANSFER">TRANSFER</option>
+                                    <option value="ADJUSTMENT">ADJUSTMENT</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity Change *</label>
+                                <input type="number" name="quantity_change" required id="edit-quantity-change">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Unit Cost</label>
+                                <input type="number" name="unit_cost" step="0.01" id="edit-unit-cost">
+                            </div>
+                            <div class="form-group">
+                                <label>Reference Number</label>
+                                <input type="text" name="reference_number" id="edit-reference-number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea name="notes" rows="2" id="edit-notes"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Transaction</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideEditTransactionForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
                 <div id="transactions-list" class="table-container"></div>
             </section>
 
@@ -450,6 +502,22 @@
         </button>
     </div>
 
-    <script src="js/app.js"></script>
+    <!-- Info Modal -->
+    <div id="info-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="info-modal-title">Information</h3>
+                <button class="modal-close" onclick="closeInfoDialog()">&times;</button>
+            </div>
+            <div class="modal-body" id="info-modal-body">
+                <!-- Content will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeInfoDialog()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js?v=7"></script>
 </body>
 </html>

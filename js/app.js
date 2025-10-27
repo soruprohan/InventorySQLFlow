@@ -24,6 +24,22 @@ function initializeApp() {
     console.log('Application initialized');
 }
 
+// Modal Dialog Functions
+function showInfoDialog(message, title = 'Information') {
+    const modal = document.getElementById('info-modal');
+    const modalTitle = document.getElementById('info-modal-title');
+    const modalBody = document.getElementById('info-modal-body');
+    
+    modalTitle.textContent = title;
+    modalBody.innerHTML = message;
+    modal.style.display = 'flex';
+}
+
+function closeInfoDialog() {
+    const modal = document.getElementById('info-modal');
+    modal.style.display = 'none';
+}
+
 // Navigation Setup
 function setupNavigation() {
     const navButtons = document.querySelectorAll('.nav-btn');
@@ -105,6 +121,12 @@ function setupFormHandlers() {
     const transactionForm = document.getElementById('transaction-form');
     if (transactionForm) {
         transactionForm.addEventListener('submit', handleTransactionSubmit);
+    }
+    
+    // Update Transaction Form
+    const updateTransactionForm = document.getElementById('update-transaction-form');
+    if (updateTransactionForm) {
+        updateTransactionForm.addEventListener('submit', handleTransactionUpdate);
     }
     
     // Adjustment Form
@@ -717,12 +739,11 @@ function displayTransactions(transactions) {
         return;
     }
     
-    let html = '<table><thead><tr><th>ID</th><th>Product</th><th>Warehouse</th><th>Type</th><th>Quantity</th><th>Unit Cost</th><th>Date</th><th>Reference</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Product</th><th>Warehouse</th><th>Type</th><th>Quantity</th><th>Unit Cost</th><th>Date</th><th>Reference</th><th>Actions</th></tr></thead><tbody>';
     
     transactions.forEach(trans => {
         html += `
             <tr>
-                <td>${trans.transaction_id}</td>
                 <td>${trans.product_name || 'N/A'}</td>
                 <td>${trans.warehouse_name || 'N/A'}</td>
                 <td><span class="status-badge status-${trans.transaction_type.toLowerCase()}">${trans.transaction_type}</span></td>
@@ -730,6 +751,11 @@ function displayTransactions(transactions) {
                 <td>$${trans.unit_cost ? parseFloat(trans.unit_cost).toFixed(2) : '0.00'}</td>
                 <td>${formatDateTime(trans.transaction_date)}</td>
                 <td>${trans.reference_number || 'N/A'}</td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="viewTransaction(${trans.transaction_id})"><i class="fas fa-eye"></i> View</button>
+                    <button class="btn btn-sm btn-primary" onclick="editTransaction(${trans.transaction_id})"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteTransaction(${trans.transaction_id})"><i class="fas fa-trash"></i> Delete</button>
+                </td>
             </tr>
         `;
     });
@@ -767,6 +793,163 @@ function handleTransactionSubmit(e) {
         }
     })
     .catch(error => console.error('Error adding transaction:', error));
+}
+
+// Edit Transaction
+function editTransaction(transactionId) {
+    console.log('editTransaction called with ID:', transactionId);
+    
+    // Fetch transaction details
+    fetch(`api/transactions.php?id=${transactionId}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Transaction data received:', data);
+            if (data.success) {
+                // Handle both array and single object response
+                const trans = Array.isArray(data.data) ? data.data[0] : data.data;
+                
+                console.log('Transaction object:', trans);
+                
+                // Populate form fields
+                document.getElementById('edit-transaction-id').value = trans.transaction_id;
+                document.getElementById('edit-quantity-change').value = trans.quantity_change;
+                document.getElementById('edit-unit-cost').value = trans.unit_cost || '';
+                document.getElementById('edit-reference-number').value = trans.reference_number || '';
+                document.getElementById('edit-notes').value = trans.notes || '';
+                document.getElementById('edit-transaction-type').value = trans.transaction_type;
+                
+                // Load and select product
+                loadProductsForEditTransaction(trans.product_id);
+                
+                // Load and select warehouse
+                loadWarehousesForEditTransaction(trans.warehouse_id);
+                
+                // Show the edit form
+                document.getElementById('edit-transaction-form').style.display = 'block';
+                document.getElementById('edit-transaction-form').scrollIntoView({ behavior: 'smooth' });
+            }
+        })
+        .catch(error => console.error('Error loading transaction:', error));
+}
+
+function hideEditTransactionForm() {
+    document.getElementById('edit-transaction-form').style.display = 'none';
+    document.getElementById('update-transaction-form').reset();
+}
+
+function handleTransactionUpdate(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+    
+    fetch('api/transactions.php', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Transaction updated successfully!');
+            if (data.sql) displaySQL(data.sql);
+            hideEditTransactionForm();
+            loadTransactions();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error updating transaction:', error));
+}
+
+function loadProductsForEditTransaction(selectedProductId) {
+    fetch('api/products.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById('edit-transaction-product-select');
+                select.innerHTML = '<option value="">Select Product</option>';
+                data.data.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.product_id;
+                    option.textContent = product.product_name;
+                    if (product.product_id == selectedProductId) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+            }
+        })
+        .catch(error => console.error('Error loading products:', error));
+}
+
+function loadWarehousesForEditTransaction(selectedWarehouseId) {
+    fetch('api/warehouses.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById('edit-transaction-warehouse-select');
+                select.innerHTML = '<option value="">Select Warehouse</option>';
+                data.data.forEach(warehouse => {
+                    const option = document.createElement('option');
+                    option.value = warehouse.warehouse_id;
+                    option.textContent = warehouse.warehouse_name;
+                    if (warehouse.warehouse_id == selectedWarehouseId) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+            }
+        })
+        .catch(error => console.error('Error loading warehouses:', error));
+}
+
+// Delete Transaction
+function deleteTransaction(transactionId) {
+    if (confirm('Are you sure you want to delete this transaction?')) {
+        fetch(`api/transactions.php?id=${transactionId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Transaction deleted successfully!');
+                if (data.sql) displaySQL(data.sql);
+                loadTransactions();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error deleting transaction:', error));
+    }
+}
+
+// View Transaction
+function viewTransaction(transactionId) {
+    fetch(`api/transactions.php?id=${transactionId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const trans = Array.isArray(data.data) ? data.data[0] : data.data;
+                
+                const details = `
+                    <strong>Transaction ID:</strong> ${trans.transaction_id}<br>
+                    <strong>Product:</strong> ${trans.product_name || 'N/A'}<br>
+                    <strong>Warehouse:</strong> ${trans.warehouse_name || 'N/A'}<br>
+                    <strong>Type:</strong> ${trans.transaction_type}<br>
+                    <strong>Quantity Change:</strong> ${trans.quantity_change}<br>
+                    <strong>Unit Cost:</strong> $${trans.unit_cost ? parseFloat(trans.unit_cost).toFixed(2) : '0.00'}<br>
+                    <strong>Transaction Date:</strong> ${formatDateTime(trans.transaction_date)}<br>
+                    <strong>Reference Number:</strong> ${trans.reference_number || 'N/A'}<br>
+                    <strong>Notes:</strong> ${trans.notes || 'N/A'}
+                `;
+                
+                showInfoDialog(details, 'Transaction Details');
+                if (data.sql) displaySQL(data.sql);
+            }
+        })
+        .catch(error => console.error('Error loading transaction:', error));
 }
 
 // Helper Functions for Dropdowns
