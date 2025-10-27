@@ -671,6 +671,130 @@ table tbody tr:last-child td {
     to { transform: rotate(360deg); }
 }
 
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10001;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+}
+
+.toast {
+    background: white;
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideIn 0.3s ease-out;
+    border-left: 4px solid var(--primary-color);
+    min-width: 300px;
+}
+
+.toast.success {
+    border-left-color: var(--success-color);
+}
+
+.toast.error {
+    border-left-color: var(--danger-color);
+}
+
+.toast.warning {
+    border-left-color: var(--warning-color);
+}
+
+.toast.info {
+    border-left-color: var(--primary-color);
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.toast.success .toast-icon {
+    color: var(--success-color);
+}
+
+.toast.error .toast-icon {
+    color: var(--danger-color);
+}
+
+.toast.warning .toast-icon {
+    color: var(--warning-color);
+}
+
+.toast.info .toast-icon {
+    color: var(--primary-color);
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--dark);
+}
+
+.toast-message {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.toast-close:hover {
+    background: var(--light);
+    color: var(--dark);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+.toast.removing {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
 /* Modal Styles */
 .modal-overlay {
     display: none;
@@ -706,6 +830,10 @@ table tbody tr:last-child td {
     animation: slideDown 0.3s ease-out;
 }
 
+.confirm-modal {
+    max-width: 500px;
+}
+
 @keyframes slideDown {
     from {
         transform: translateY(-50px);
@@ -730,6 +858,12 @@ table tbody tr:last-child td {
     margin: 0;
     color: var(--dark);
     font-size: 1.3rem;
+}
+
+.modal-icon-warning {
+    font-size: 1.5rem;
+    color: var(--warning-color);
+    margin-right: 10px;
 }
 
 .modal-close {
@@ -786,4 +920,37 @@ table tbody tr:last-child td {
     border-top: 1px solid var(--border);
     text-align: right;
     background: var(--light);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-cancel-btn, .modal-confirm-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.modal-cancel-btn {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.modal-cancel-btn:hover {
+    background: #475569;
+}
+
+.modal-confirm-btn {
+    background: var(--danger-color);
+    color: white;
+}
+
+.modal-confirm-btn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
 }

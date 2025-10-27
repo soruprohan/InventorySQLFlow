@@ -2,6 +2,120 @@
 let sqlHistory = [];
 let currentSQL = '';
 
+// Toast Notification System
+function showToast(message, type = 'info', title = '') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+
+    const titles = {
+        success: title || 'Success',
+        error: title || 'Error',
+        warning: title || 'Warning',
+        info: title || 'Info'
+    };
+
+    toast.innerHTML = `
+        <i class="fas ${icons[type]} toast-icon"></i>
+        <div class="toast-content">
+            <div class="toast-title">${titles[type]}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="closeToast(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
+    container.appendChild(toast);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        removeToast(toast);
+    }, 5000);
+}
+
+function closeToast(button) {
+    const toast = button.closest('.toast');
+    removeToast(toast);
+}
+
+function removeToast(toast) {
+    toast.classList.add('removing');
+    setTimeout(() => {
+        toast.remove();
+    }, 300);
+}
+
+// Confirmation Dialog System
+function showConfirmDialog(message, onConfirm, onCancel = null, title = 'Confirm Action') {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.style.display = 'flex';
+        
+        overlay.innerHTML = `
+            <div class="modal-content confirm-modal">
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-exclamation-triangle modal-icon-warning"></i>${title}</h3>
+                </div>
+                <div class="modal-body">
+                    <p>${message}</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary modal-cancel-btn">Cancel</button>
+                    <button class="btn btn-danger modal-confirm-btn">Confirm</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const confirmBtn = overlay.querySelector('.modal-confirm-btn');
+        const cancelBtn = overlay.querySelector('.modal-cancel-btn');
+
+        confirmBtn.onclick = function() {
+            overlay.remove();
+            resolve(true);
+            if (onConfirm) onConfirm();
+        };
+
+        cancelBtn.onclick = function() {
+            overlay.remove();
+            resolve(false);
+            if (onCancel) onCancel();
+        };
+
+        // Close on overlay click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.remove();
+                resolve(false);
+                if (onCancel) onCancel();
+            }
+        });
+
+        // ESC key to close
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                overlay.remove();
+                resolve(false);
+                document.removeEventListener('keydown', escHandler);
+                if (onCancel) onCancel();
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+    });
+}
+
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
@@ -40,6 +154,15 @@ function showInfoDialog(message, title = 'Information') {
             closeInfoDialog();
         }
     };
+
+    // ESC key to close
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeInfoDialog();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
 }
 
 function closeInfoDialog() {
@@ -284,34 +407,45 @@ function handleProductSubmit(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Product added successfully!');
+            showToast('Product added successfully!', 'success');
             if (data.sql) displaySQL(data.sql);
             hideAddProductForm();
             loadProducts();
         } else {
-            alert('Error: ' + data.message);
+            showToast(data.message, 'error', 'Failed to Add Product');
         }
     })
-    .catch(error => console.error('Error adding product:', error));
+    .catch(error => {
+        console.error('Error adding product:', error);
+        showToast('An error occurred while adding the product', 'error');
+    });
 }
 
 function deleteProduct(productId) {
-    if (!confirm('Are you sure you want to delete this product?')) return;
-    
-    fetch(`api/products.php?id=${productId}`, {
-        method: 'DELETE'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Product deleted successfully!');
-            if (data.sql) displaySQL(data.sql);
-            loadProducts();
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => console.error('Error deleting product:', error));
+    showConfirmDialog(
+        'Are you sure you want to delete this product? This action cannot be undone.',
+        () => {
+            fetch(`api/products.php?id=${productId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Product deleted successfully!', 'success');
+                    if (data.sql) displaySQL(data.sql);
+                    loadProducts();
+                } else {
+                    showToast(data.message, 'error', 'Failed to Delete');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting product:', error);
+                showToast('An error occurred while deleting the product', 'error');
+            });
+        },
+        null,
+        'Delete Product'
+    );
 }
 
 function viewProduct(productId) {
@@ -336,12 +470,12 @@ function viewProduct(productId) {
                 showInfoDialog(details, 'Product Details');
                 if (data.sql) displaySQL(data.sql);
             } else {
-                alert('Product not found');
+                showToast('Product not found', 'error');
             }
         })
         .catch(error => {
             console.error('Error viewing product:', error);
-            alert('An error occurred while loading product details');
+            showToast('An error occurred while loading product details', 'error');
         });
 }
 
@@ -399,17 +533,17 @@ function handleProductUpdate(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Product updated successfully!');
+            showToast('Product updated successfully!', 'success');
             if (data.sql) displaySQL(data.sql);
             hideEditProductForm();
             loadProducts();
         } else {
-            alert('Error: ' + data.message);
+            showToast(data.message, 'error', 'Failed to Update');
         }
     })
     .catch(error => {
         console.error('Error updating product:', error);
-        alert('An error occurred while updating the product');
+        showToast('An error occurred while updating the product', 'error');
     });
 }
 
@@ -516,12 +650,12 @@ function viewInventory(productId, warehouseId) {
                 showInfoDialog(details, 'Inventory Details');
                 if (data.sql) displaySQL(data.sql);
             } else {
-                alert('Inventory record not found');
+                showToast('Inventory record not found', 'error');
             }
         })
         .catch(error => {
             console.error('Error viewing inventory:', error);
-            alert('An error occurred while loading inventory details');
+            showToast('An error occurred while loading inventory details', 'error');
         });
 }
 
@@ -564,15 +698,18 @@ function handleAdjustmentSubmit(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Stock adjustment saved successfully!');
+            showToast('Stock adjustment saved successfully!', 'success');
             if (data.sql) displaySQL(data.sql);
             hideStockAdjustmentForm();
             loadInventory();
         } else {
-            alert('Error: ' + data.message);
+            showToast(data.message, 'error', 'Failed to Save Adjustment');
         }
     })
-    .catch(error => console.error('Error saving adjustment:', error));
+    .catch(error => {
+        console.error('Error saving adjustment:', error);
+        showToast('An error occurred while saving the adjustment', 'error');
+    });
 }
 
 // Suppliers Management
@@ -639,34 +776,45 @@ function handleSupplierSubmit(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Supplier added successfully!');
+            showToast('Supplier added successfully!', 'success');
             if (data.sql) displaySQL(data.sql);
             hideAddSupplierForm();
             loadSuppliers();
         } else {
-            alert('Error: ' + data.message);
+            showToast(data.message, 'error', 'Failed to Add Supplier');
         }
     })
-    .catch(error => console.error('Error adding supplier:', error));
+    .catch(error => {
+        console.error('Error adding supplier:', error);
+        showToast('An error occurred while adding the supplier', 'error');
+    });
 }
 
 function deleteSupplier(supplierId) {
-    if (!confirm('Are you sure you want to delete this supplier?')) return;
-    
-    fetch(`api/suppliers.php?id=${supplierId}`, {
-        method: 'DELETE'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Supplier deleted successfully!');
-            if (data.sql) displaySQL(data.sql);
-            loadSuppliers();
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => console.error('Error deleting supplier:', error));
+    showConfirmDialog(
+        'Are you sure you want to delete this supplier? This action cannot be undone.',
+        () => {
+            fetch(`api/suppliers.php?id=${supplierId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Supplier deleted successfully!', 'success');
+                    if (data.sql) displaySQL(data.sql);
+                    loadSuppliers();
+                } else {
+                    showToast(data.message, 'error', 'Failed to Delete');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting supplier:', error);
+                showToast('An error occurred while deleting the supplier', 'error');
+            });
+        },
+        null,
+        'Delete Supplier'
+    );
 }
 
 function viewSupplier(supplierId) {
@@ -689,12 +837,12 @@ function viewSupplier(supplierId) {
                 showInfoDialog(details, 'Supplier Details');
                 if (data.sql) displaySQL(data.sql);
             } else {
-                alert('Supplier not found');
+                showToast('Supplier not found', 'error');
             }
         })
         .catch(error => {
             console.error('Error viewing supplier:', error);
-            alert('An error occurred while loading supplier details');
+            showToast('An error occurred while loading supplier details', 'error');
         });
 }
 
@@ -765,15 +913,18 @@ function handlePOSubmit(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Purchase order created successfully!');
+            showToast('Purchase order created successfully!', 'success');
             if (data.sql) displaySQL(data.sql);
             hideAddPOForm();
             loadPurchaseOrders();
         } else {
-            alert('Error: ' + data.message);
+            showToast(data.message, 'error', 'Failed to Create PO');
         }
     })
-    .catch(error => console.error('Error creating purchase order:', error));
+    .catch(error => {
+        console.error('Error creating purchase order:', error);
+        showToast('An error occurred while creating the purchase order', 'error');
+    });
 }
 
 function viewPO(poId) {
@@ -797,32 +948,40 @@ function viewPO(poId) {
                 showInfoDialog(details, 'Purchase Order Details');
                 if (data.sql) displaySQL(data.sql);
             } else {
-                alert('Purchase order not found');
+                showToast('Purchase order not found', 'error');
             }
         })
         .catch(error => {
             console.error('Error viewing purchase order:', error);
-            alert('An error occurred while loading purchase order details');
+            showToast('An error occurred while loading purchase order details', 'error');
         });
 }
 
 function deletePO(poId) {
-    if (!confirm('Are you sure you want to delete this purchase order?')) return;
-    
-    fetch(`api/purchase_orders.php?id=${poId}`, {
-        method: 'DELETE'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Purchase order deleted successfully!');
-            if (data.sql) displaySQL(data.sql);
-            loadPurchaseOrders();
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => console.error('Error deleting purchase order:', error));
+    showConfirmDialog(
+        'Are you sure you want to delete this purchase order? This action cannot be undone.',
+        () => {
+            fetch(`api/purchase_orders.php?id=${poId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Purchase order deleted successfully!', 'success');
+                    if (data.sql) displaySQL(data.sql);
+                    loadPurchaseOrders();
+                } else {
+                    showToast(data.message, 'error', 'Failed to Delete');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting purchase order:', error);
+                showToast('An error occurred while deleting the purchase order', 'error');
+            });
+        },
+        null,
+        'Delete Purchase Order'
+    );
 }
 
 // Transactions Management
@@ -891,15 +1050,18 @@ function handleTransactionSubmit(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Transaction added successfully!');
+            showToast('Transaction added successfully!', 'success');
             if (data.sql) displaySQL(data.sql);
             hideAddTransactionForm();
             loadTransactions();
         } else {
-            alert('Error: ' + data.message);
+            showToast(data.message, 'error', 'Failed to Add Transaction');
         }
     })
-    .catch(error => console.error('Error adding transaction:', error));
+    .catch(error => {
+        console.error('Error adding transaction:', error);
+        showToast('An error occurred while adding the transaction', 'error');
+    });
 }
 
 // Edit Transaction
@@ -959,15 +1121,18 @@ function handleTransactionUpdate(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Transaction updated successfully!');
+            showToast('Transaction updated successfully!', 'success');
             if (data.sql) displaySQL(data.sql);
             hideEditTransactionForm();
             loadTransactions();
         } else {
-            alert('Error: ' + data.message);
+            showToast(data.message, 'error', 'Failed to Update');
         }
     })
-    .catch(error => console.error('Error updating transaction:', error));
+    .catch(error => {
+        console.error('Error updating transaction:', error);
+        showToast('An error occurred while updating the transaction', 'error');
+    });
 }
 
 function loadProductsForEditTransaction(selectedProductId) {
@@ -1014,22 +1179,30 @@ function loadWarehousesForEditTransaction(selectedWarehouseId) {
 
 // Delete Transaction
 function deleteTransaction(transactionId) {
-    if (confirm('Are you sure you want to delete this transaction?')) {
-        fetch(`api/transactions.php?id=${transactionId}`, {
-            method: 'DELETE'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Transaction deleted successfully!');
-                if (data.sql) displaySQL(data.sql);
-                loadTransactions();
-            } else {
-                alert('Error: ' + data.message);
-            }
-        })
-        .catch(error => console.error('Error deleting transaction:', error));
-    }
+    showConfirmDialog(
+        'Are you sure you want to delete this transaction? This action cannot be undone.',
+        () => {
+            fetch(`api/transactions.php?id=${transactionId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Transaction deleted successfully!', 'success');
+                    if (data.sql) displaySQL(data.sql);
+                    loadTransactions();
+                } else {
+                    showToast(data.message, 'error', 'Failed to Delete');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting transaction:', error);
+                showToast('An error occurred while deleting the transaction', 'error');
+            });
+        },
+        null,
+        'Delete Transaction'
+    );
 }
 
 // View Transaction
@@ -1057,12 +1230,12 @@ function viewTransaction(transactionId) {
                 showInfoDialog(details, 'Transaction Details');
                 if (data.sql) displaySQL(data.sql);
             } else {
-                alert('Transaction not found');
+                showToast('Transaction not found', 'error');
             }
         })
         .catch(error => {
             console.error('Error loading transaction:', error);
-            alert('An error occurred while loading transaction details');
+            showToast('An error occurred while loading transaction details', 'error');
         });
 }
 
