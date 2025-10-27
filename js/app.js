@@ -632,8 +632,8 @@ function viewInventory(productId, warehouseId) {
     fetch(`api/inventory.php?product_id=${productId}&warehouse_id=${warehouseId}`)
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.data && data.data.length > 0) {
-                const inv = data.data[0];
+            if (data.success && data.data) {
+                const inv = data.data;
                 const available = inv.quantity_on_hand - inv.quantity_reserved;
                 const details = `
                     <div style="line-height: 1.8;">
@@ -1345,6 +1345,56 @@ function initializeSQLDialog() {
     if (savedHistory) {
         sqlHistory = JSON.parse(savedHistory);
         updateHistoryDisplay();
+    }
+    
+    // Make SQL dialog draggable
+    makeDraggable(document.getElementById('sql-dialog'));
+}
+
+function makeDraggable(element) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    const header = element.querySelector('.sql-dialog-header');
+    
+    if (header) {
+        header.style.cursor = 'move';
+        header.onmousedown = dragMouseDown;
+    }
+    
+    function dragMouseDown(e) {
+        e.preventDefault();
+        // Get the mouse cursor position at startup
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+    
+    function elementDrag(e) {
+        e.preventDefault();
+        // Calculate the new cursor position
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        
+        // Set the element's new position
+        const newTop = element.offsetTop - pos2;
+        const newLeft = element.offsetLeft - pos1;
+        
+        // Keep dialog within viewport bounds
+        const maxTop = window.innerHeight - element.offsetHeight;
+        const maxLeft = window.innerWidth - element.offsetWidth;
+        
+        element.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px';
+        element.style.left = Math.max(0, Math.min(newLeft, maxLeft)) + 'px';
+        element.style.right = 'auto';
+        element.style.bottom = 'auto';
+    }
+    
+    function closeDragElement() {
+        // Stop moving when mouse button is released
+        document.onmouseup = null;
+        document.onmousemove = null;
     }
 }
 
