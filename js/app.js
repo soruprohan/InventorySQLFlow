@@ -1470,18 +1470,25 @@ function toggleSQLHistory() {
 }
 
 function clearSQLHistory() {
-    if (!confirm('Are you sure you want to clear the SQL history?')) return;
-    
-    sqlHistory = [];
-    localStorage.removeItem('sqlHistory');
-    updateHistoryDisplay();
+    showConfirmDialog(
+        'Are you sure you want to clear all SQL history? This action cannot be undone.',
+        () => {
+            sqlHistory = [];
+            localStorage.removeItem('sqlHistory');
+            updateHistoryDisplay();
+            showToast('SQL history cleared successfully', 'success', 'History Cleared');
+        },
+        null,
+        'Clear SQL History'
+    );
 }
 
 function copySQLToClipboard() {
     navigator.clipboard.writeText(currentSQL).then(() => {
-        alert('SQL query copied to clipboard!');
+        showToast('SQL query copied to clipboard!', 'success', 'Copied');
     }).catch(err => {
         console.error('Error copying to clipboard:', err);
+        showToast('Failed to copy query to clipboard', 'error', 'Copy Failed');
     });
 }
 
