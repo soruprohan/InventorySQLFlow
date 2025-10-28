@@ -212,6 +212,12 @@ function showSection(sectionId) {
                 loadProductsForSelect();
                 loadWarehousesForSelect();
                 break;
+            case 'categories':
+                loadCategories();
+                break;
+            case 'warehouses':
+                loadWarehouses();
+                break;
             case 'suppliers':
                 loadSuppliers();
                 break;

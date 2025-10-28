@@ -7,7 +7,11 @@ header('Content-Type: application/json');
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['id'])) {
         $id = intval($_GET['id']);
-        $sql = "SELECT * FROM categories WHERE category_id = $id";
+        $sql = "SELECT c.*, COUNT(p.product_id) as product_count 
+                FROM categories c 
+                LEFT JOIN products p ON c.category_id = p.category_id 
+                WHERE c.category_id = $id
+                GROUP BY c.category_id, c.category_name, c.description";
         
         $result = executeQuery($sql);
         
