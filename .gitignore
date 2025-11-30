@@ -1,0 +1,63 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database
+*.sql.backup
+*.db
+*.sqlite
+
+# Sensitive Configuration Files
+api/config.php
+config.php
+.env
+
+# Cache and Temporary Files
+cache/
+tmp/
+temp/
+*.tmp
+
+# Backup Files
+*.bak
+*_backup.*
+index_backup.html
+
+# User Generated Files
+uploads/
+user_uploads/
+
+# PHP
+composer.phar
+composer.lock
+vendor/
+
+# Node modules (if any)
+node_modules/
+
+# OS generated files
+.DS_Store
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Password and user generation scripts (temporary)
+generate_users.php
+create_users_table.sql
